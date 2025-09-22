@@ -1,4 +1,3 @@
-// api/saveResult.js
 import { google } from "googleapis";
 
 export default async function handler(req, res) {
@@ -7,25 +6,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Debug log to check env vars
-    console.log("ENV DEBUG:", {
-      client: process.env.GOOGLE_CLIENT_EMAIL,
-      hasKey: !!process.env.GOOGLE_PRIVATE_KEY,
-      sheet: process.env.SHEET_ID,
-    });
+    // Build credentials from env vars
+    const credentials = {
+      type: "service_account",
+      project_id: process.env.GOOGLE_PROJECT_ID,
+      private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
+      // 👇 Turn all the \n into real newlines
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL,
+      universe_domain: "googleapis.com",
+    };
 
-    // Authenticate with service account from environment variables
     const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-      },
+      credentials,
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // Grab fields from frontend payload
     const {
       name = "",
       email = "",
@@ -35,20 +38,17 @@ export default async function handler(req, res) {
     } = req.body || {};
 
     const spreadsheetId = process.env.SHEET_ID;
-    const range = "Responses!A:O"; // Adjusted to your sheet structure
+    const range = "Responses!A:O";
 
-    // Build row to insert into Google Sheets
     const row = [
-      new Date().toISOString(), // A - Timestamp
-      name,                     // B - Name
-      email,                    // C - Email
-      successPath,              // D - Path
-      JSON.stringify(answers),  // E - Answers
-      gdpr ? "yes" : "no",      // F - GDPR
-      "", "", "", "", "", "", "", "", "" // G..O placeholders
+      new Date().toISOString(),
+      name,
+      email,
+      successPath,
+      JSON.stringify(answers),
+      gdpr ? "yes" : "no",
+      "", "", "", "", "", "", "", "", ""
     ];
-
-    console.log("Appending row:", row);
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
@@ -59,9 +59,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true });
   } catch (err) {
-    console.error("saveResult error:", err?.response?.data || err.message || err);
-    return res
-      .status(500)
-      .json({ error: err?.message || "Internal server error" });
+    console.error("saveResult error:", err);
+    return res.status(500).json({ error: err?.message || "Internal server error" });
   }
 }
