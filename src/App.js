@@ -359,9 +359,8 @@ export default function App() {
               style={{
               ...btnGreen,
               opacity: isFormValid ? 1 : 0.6,
-              display: "inline-block",
-              width: "auto",
-              alignSelf: "center",
+              justifySelf: "center",
+              width: "fit-content",
             }}
             disabled={!isFormValid}
             onClick={() => setStep (1)}
@@ -409,15 +408,14 @@ export default function App() {
             dangerouslySetInnerHTML={{ __html: res.initial }}
           />
           <button
-            style={{
-              ...btnGreen,
-              display: "inline block",
-              width: "auto",
-              alignSelf: "center",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-            onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
-            onClick={() => (window.location.href = res.url)}
+          style={{
+            ...btnGreen,
+            justifySelf: "center",
+            width: "fit-content",
+           }}
+           onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
+           onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
+           onClick={() => (window.location.href = res.url)}
           >
             See Your Full Result →
           </button>
