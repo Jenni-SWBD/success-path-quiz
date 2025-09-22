@@ -7,6 +7,13 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Debug log to check env vars
+    console.log("ENV DEBUG:", {
+      client: process.env.GOOGLE_CLIENT_EMAIL,
+      hasKey: !!process.env.GOOGLE_PRIVATE_KEY,
+      sheet: process.env.SHEET_ID,
+    });
+
     // Authenticate with service account from environment variables
     const auth = new google.auth.GoogleAuth({
       credentials: {
