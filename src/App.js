@@ -1,11 +1,10 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
-/* =========================
-   Quiz Questions (11 Qs)
-   ========================= */
+// -------------------
+// Quiz Questions
+// -------------------
 const questions = [
   {
     text: "1. What’s been on your mind most in business lately?",
@@ -108,9 +107,9 @@ const questions = [
   },
 ];
 
-/* =========================
-   Results Content
-   ========================= */
+// -------------------
+// Results Content
+// -------------------
 const results = {
   A: {
     label: "Impact",
@@ -167,9 +166,9 @@ const results = {
   },
 };
 
-/* =========================
-   Brand Styles
-   ========================= */
+// -------------------
+// Styles
+// -------------------
 const sqsGreen = "#b9e085";
 const sqsGreenHover = "#a4cc73";
 const borderColor = "#3a3a3a";
@@ -197,17 +196,15 @@ const btnWhite = {
   textAlign: "left",
 };
 
-/* =========================
-   App Component
-   ========================= */
+// -------------------
+// App Component
+// -------------------
 export default function App() {
-  // Intro state
-  const [step, setStep] = useState(0); // 0=intro, 1..11=questions
+  const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gdpr, setGdpr] = useState(false);
 
-  // Validation state
   const [nameTouched, setNameTouched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
 
@@ -231,13 +228,12 @@ export default function App() {
   const isFormValid =
     validateName(name) === "" && validateEmail(email) === "" && gdpr;
 
-  // Quiz state
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
 
   const handleAnswer = (letter) => {
     const next = [...answers];
-    next[step - 1] = letter; // because step 1 = Q1
+    next[step - 1] = letter;
     setAnswers(next);
     if (step < questions.length) setStep(step + 1);
     else setSubmitted(true);
@@ -257,9 +253,21 @@ export default function App() {
     return Object.keys(tally).find((k) => tally[k] === max);
   };
 
-  /* ==========================================
-     Save to Google Sheets (backend API call)
-     ========================================== */
+  // Auto-resize for Squarespace iframe
+  useEffect(() => {
+    const postHeight = () => {
+      window.parent.postMessage(
+        { type: "resize-iframe", height: document.body.scrollHeight },
+        "*"
+      );
+    };
+    postHeight();
+    const ro = new ResizeObserver(postHeight);
+    ro.observe(document.body);
+    return () => ro.disconnect();
+  }, []);
+
+  // Save to Sheets
   useEffect(() => {
     if (!submitted) return;
     const winner = calcResult();
@@ -276,142 +284,171 @@ export default function App() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    }).catch(() => {
-      // Silent fail — still show result
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }).catch(() => {});
   }, [submitted]);
 
-  /* ==========================================
-   Squarespace auto-resize (postMessage)
-   ========================================== */
-useEffect(() => {
-  const postHeight = () => {
-    window.parent.postMessage(
-      { type: "resize-iframe", height: document.body.scrollHeight },
-      "*"
-    );
-  };
-
-  // Initial fire
-  postHeight();
-
-  // Watch for content size changes
-  const ro = new ResizeObserver(postHeight);
-  ro.observe(document.body);
-
-  // Cleanup
-  return () => ro.disconnect();
-}, []);
-
-  /* =========================
-     Intro Screen
-     ========================= */
+  // -------------------
+  // Intro Screen
+  // -------------------
   if (step === 0) {
     return (
-      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#fff", padding: 24 }}>
-        <div style={{ width: "100%", maxWidth: 600, borderRadius: 16, boxShadow: "0 6px 20px rgba(0,0,0,0.06)", padding: 40 }}>
-          {/* Hero Image */}
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          background: "#fff",
+          padding: 0,
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 600,
+            borderRadius: 14,
+            boxShadow: "0 3px 10px rgba(0,0,0,0.06)",
+            padding: 0,
+          }}
+        >
           <img
             src="/quiz-cover.png"
             alt="Success Path Quiz"
-            style={{ width: "100%", borderRadius: 12, marginBottom: 12 }}
+            style={{ width: "100%", borderRadius: 8, marginBottom: 0 }}
           />
 
-          {/* Intro Copy */}
-          <h2
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              marginBottom: 12,
-              color: "#028c8f",
-            }}
-          >
-            Discover Your Success Path
-          </h2>
-
-          <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
-            <b>Your energy already knows how to move.</b> This quiz helps you hear it so
-            you can step into your business flow.
-          </p>
-
-          <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
-            It’s not a personality test. It’s a precision tool that tunes you into your
-            most active Success Path: Impact, Growth, Balance or Transformation, to help
-            you align with the energy shaping what comes next.
-          </p>
-
-          {/* Form */}
-          <div style={{ display: "grid", gap: 14 }}>
-            <input
-              type="text"
-              placeholder="Your Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onBlur={() => setNameTouched(true)}
-              style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc", fontSize: 16 }}
-            />
-            {nameError && <div style={{ color: "red", fontSize: 14 }}>{nameError}</div>}
-
-            <input
-              type="email"
-              placeholder="Your Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={() => setEmailTouched(true)}
-              style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc", fontSize: 16 }}
-            />
-            {emailError && <div style={{ color: "red", fontSize: 14 }}>{emailError}</div>}
-
-            <label style={{ fontSize: 14, textAlign: "left" }}>
-              <input
-                type="checkbox"
-                checked={gdpr}
-                onChange={(e) => setGdpr(e.target.checked)}
-                style={{ marginRight: 8 }}
-              />
-              By entering your email, you agree to get your quiz results as well
-              as insights and prompts for your next steps.
-            </label>
-
-            <button
+          <div style={{ padding: 24 }}>
+            <h2
               style={{
-                ...btnGreen,
-                opacity: isFormValid ? 1 : 0.6,
-                justifySelf: "center",
-                width: "fit-content",
+                fontSize: 22,
+                fontWeight: 700,
+                marginBottom: 12,
+                color: "#028c8f",
               }}
-              disabled={!isFormValid}
-              onClick={() => setStep(1)}
-              onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
             >
-              Start Quiz →
-            </button>
+              Discover Your Success Path
+            </h2>
+
+            <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
+              <b>Your energy already knows how to move.</b> This quiz helps you
+              hear it so you can step into your business flow.
+            </p>
+
+            <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
+              It’s not a personality test. It’s a precision tool that tunes you
+              into your most active Success Path: Impact, Growth, Balance or
+              Transformation, to help you align with the energy shaping what
+              comes next.
+            </p>
+
+            <div style={{ display: "grid", gap: 14 }}>
+              <input
+                type="text"
+                placeholder="Your Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={() => setNameTouched(true)}
+                style={{
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid #ccc",
+                  fontSize: 16,
+                }}
+              />
+              {nameError && (
+                <div style={{ color: "red", fontSize: 14 }}>{nameError}</div>
+              )}
+
+              <input
+                type="email"
+                placeholder="Your Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => setEmailTouched(true)}
+                style={{
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid #ccc",
+                  fontSize: 16,
+                }}
+              />
+              {emailError && (
+                <div style={{ color: "red", fontSize: 14 }}>{emailError}</div>
+              )}
+
+              <label style={{ fontSize: 14, textAlign: "left" }}>
+                <input
+                  type="checkbox"
+                  checked={gdpr}
+                  onChange={(e) => setGdpr(e.target.checked)}
+                  style={{ marginRight: 8 }}
+                />
+                By entering your email, you agree to get your quiz results as
+                well as insights and prompts for your next steps.
+              </label>
+
+              <button
+                style={{
+                  ...btnGreen,
+                  opacity: isFormValid ? 1 : 0.6,
+                  justifySelf: "center",
+                  width: "fit-content",
+                }}
+                disabled={!isFormValid}
+                onClick={() => setStep(1)}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = sqsGreenHover)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = sqsGreen)
+                }
+              >
+                Start Quiz →
+              </button>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  /* =========================
-     Results Screen
-     ========================= */
+  // -------------------
+  // Results Screen
+  // -------------------
   if (submitted) {
     const winner = calcResult();
     const res = results[winner];
-
     return (
-      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#fff", padding: 24 }}>
-        <div style={{ width: "100%", maxWidth: 720, borderRadius: 16, boxShadow: "0 6px 20px rgba(0,0,0,0.06)", padding: 40, textAlign: "center" }}>
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          background: "#fff",
+          padding: 24,
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 720,
+            borderRadius: 14,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
+            padding: 24,
+            textAlign: "center",
+          }}
+        >
           <motion.h2
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            style={{ fontSize: 26, fontWeight: 700, marginBottom: 20, color: res.colour }}
+            style={{
+              fontSize: 26,
+              fontWeight: 700,
+              marginBottom: 20,
+              color: res.colour,
+            }}
           >
             Your Success Path is… {res.label}
           </motion.h2>
-
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -428,11 +465,18 @@ useEffect(() => {
             }}
             dangerouslySetInnerHTML={{ __html: res.initial }}
           />
-
           <button
-            style={{ ...btnGreen, justifySelf: "center", width: "fit-content" }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-            onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
+            style={{
+              ...btnGreen,
+              justifySelf: "center",
+              width: "fit-content",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = sqsGreenHover)
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = sqsGreen)
+            }
             onClick={() => (window.location.href = res.url)}
           >
             See Your Full Result →
@@ -442,19 +486,41 @@ useEffect(() => {
     );
   }
 
-  /* =========================
-     Question Screens
-     ========================= */
+  // -------------------
+  // Question Screens
+  // -------------------
   const q = questions[step - 1];
   const progress = Math.round(((step - 1) / questions.length) * 100);
 
   return (
-    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24 }}>
-      <div style={{ width: "100%", maxWidth: 720, borderRadius: 16, boxShadow: "0 8px 28px rgba(0,0,0,0.08)", padding: 32 }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "grid",
+        placeItems: "center",
+        padding: 24,
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 720,
+          borderRadius: 16,
+          boxShadow: "0 8px 28px rgba(0,0,0,0.08)",
+          padding: 24,
+        }}
+      >
         {/* Progress */}
         <div style={{ marginBottom: 16 }}>
           <div style={{ height: 6, background: "#eee", borderRadius: 999 }}>
-            <div style={{ width: `${progress}%`, height: "100%", background: "#028c8f", borderRadius: 999 }} />
+            <div
+              style={{
+                width: `${progress}%`,
+                height: "100%",
+                background: "#028c8f",
+                borderRadius: 999,
+              }}
+            />
           </div>
           <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>
             Question {step} of {questions.length}
@@ -476,21 +542,28 @@ useEffect(() => {
                   key={i}
                   onClick={() => handleAnswer(o.letter)}
                   style={{ ...btnWhite }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = sqsGreenHover; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = sqsGreenHover;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#fff";
+                  }}
                 >
                   {o.text}
                 </button>
               ))}
             </div>
-
             {step > 1 && (
               <div style={{ marginTop: 14 }}>
                 <button
                   onClick={handleBack}
                   style={{ ...btnGreen }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.background = sqsGreenHover)
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.background = sqsGreen)
+                  }
                 >
                   Back
                 </button>
