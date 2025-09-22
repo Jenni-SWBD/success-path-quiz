@@ -287,15 +287,30 @@ export default function App() {
           />
 
           {/* Intro Text */}
-          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>
-            Discover Your Success Path
-          </h2>
-          <p style={{ fontSize: 16, lineHeight: 1.6, marginBottom: 24 }}>
-            Your energy already knows how to move. This quiz helps you tune into
-            the signal that’s loudest right now. Answer 11 short questions and
-            discover which path — Impact, Growth, Balance or Transformation —
-            is calling you forward.
-          </p>
+          <h2
+  style={{
+    fontSize: 24,
+    fontWeight: 700,
+    marginBottom: 12,
+    color: "#028c8f",      // ✅ headline teal
+  }}
+>
+  Discover Your Success Path
+</h2>
+
+<p
+  style={{
+    fontSize: 18,          // ✅ bigger intro text
+    lineHeight: 1.7,
+    marginBottom: 28,
+  }}
+>
+  Your energy already knows how to move. This quiz helps you tune into
+  the signal that’s loudest right now. Answer 11 short questions and
+  discover which path — Impact, Growth, Balance or Transformation —
+  is calling you forward.
+</p>
+
 
           {/* Form */}
           <div style={{ display: "grid", gap: 14 }}>
