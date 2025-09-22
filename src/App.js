@@ -300,15 +300,25 @@ export default function App() {
 
 <p
   style={{
-    fontSize: 16,          // ✅ bigger intro text
-    lineHeight: 1.7,
+    fontSize: 16,
+    lineHeight: 1.5,
     marginBottom: 28,
   }}
 >
-  Your energy already knows how to move. This quiz helps you tune into
-  the signal that’s loudest right now. Answer 11 short questions and
-  discover which path — Impact, Growth, Balance or Transformation —
-  is calling you forward.
+  <b>Your energy already knows how to move.</b> This quiz helps you hear it so
+  you can step into your business flow.
+</p>
+
+<p
+  style={{
+    fontSize: 16,
+    lineHeight: 1.5,
+    marginBottom: 28,
+  }}
+>
+  It’s not a personality test. It’s a precision tool that tunes you into your
+  most active Success Path: Impact, Growth, Balance or Transformation. That way
+  you can align with the energy shaping what comes next.
 </p>
 
 
