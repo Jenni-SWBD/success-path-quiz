@@ -302,7 +302,7 @@ export default function App() {
   style={{
     fontSize: 16,
     lineHeight: 1.5,
-    marginBottom: 28,
+    marginBottom: 12,
   }}
 >
   <b>Your energy already knows how to move.</b> This quiz helps you hear it so
@@ -313,7 +313,7 @@ export default function App() {
   style={{
     fontSize: 16,
     lineHeight: 1.5,
-    marginBottom: 14,
+    marginBottom: 12,
   }}
 >
   It’s not a personality test. It’s a precision tool that tunes you into your
