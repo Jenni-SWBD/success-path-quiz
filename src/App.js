@@ -313,12 +313,12 @@ export default function App() {
   style={{
     fontSize: 16,
     lineHeight: 1.5,
-    marginBottom: 28,
+    marginBottom: 14,
   }}
 >
   It’s not a personality test. It’s a precision tool that tunes you into your
-  most active Success Path: Impact, Growth, Balance or Transformation. That way
-  you can align with the energy shaping what comes next.
+  most active Success Path: Impact, Growth, Balance or Transformation, to help
+  you align with the energy shaping what comes next.
 </p>
 
 
