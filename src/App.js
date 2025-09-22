@@ -289,7 +289,7 @@ export default function App() {
           {/* Intro Text */}
           <h2
   style={{
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 700,
     marginBottom: 12,
     color: "#028c8f",      // ✅ headline teal
@@ -300,7 +300,7 @@ export default function App() {
 
 <p
   style={{
-    fontSize: 18,          // ✅ bigger intro text
+    fontSize: 16,          // ✅ bigger intro text
     lineHeight: 1.7,
     marginBottom: 28,
   }}
