@@ -7,18 +7,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Load service account credentials from Vercel env vars
-    const credentials = {
-      type: "service_account",
-      project_id: process.env.GOOGLE_PROJECT_ID,
-      private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
-      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-    };
-
+    // Authenticate with service account from environment variables
     const auth = new google.auth.GoogleAuth({
-      credentials,
+      credentials: {
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
@@ -34,30 +28,27 @@ export default async function handler(req, res) {
     } = req.body || {};
 
     const spreadsheetId = process.env.SHEET_ID;
-    const range = "Responses!A:O"; // Match your sheet structure (15 columns)
+    const range = "Responses!A:O"; // Adjusted to your sheet structure
 
-    // Build a row with 15 columns (A → O)
+    // Build row to insert into Google Sheets
     const row = [
-      new Date().toISOString(), // A Timestamp
-      name,                     // B Name
-      email,                    // C Email
-      successPath,              // D Path
-      JSON.stringify(answers),  // E Answers
-      gdpr ? "yes" : "no",      // F GDPR
+      new Date().toISOString(), // A - Timestamp
+      name,                     // B - Name
+      email,                    // C - Email
+      successPath,              // D - Path
+      JSON.stringify(answers),  // E - Answers
+      gdpr ? "yes" : "no",      // F - GDPR
       "", "", "", "", "", "", "", "", "" // G..O placeholders
     ];
 
-    console.log("saveResult API called with:", req.body);
     console.log("Appending row:", row);
 
-    const response = await sheets.spreadsheets.values.append({
+    await sheets.spreadsheets.values.append({
       spreadsheetId,
       range,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [row] },
     });
-
-    console.log("Google Sheets API response:", response.data);
 
     return res.status(200).json({ success: true });
   } catch (err) {
