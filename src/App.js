@@ -283,37 +283,26 @@ export default function App() {
   }, [submitted]);
 
   /* ==========================================
-     Squarespace auto-resize (postMessage)
-     ========================================== */
-  useEffect(() => {
-    // Post current height on mount + whenever content size changes
-    const postHeight = () => {
-      try {
-        window.parent.postMessage(
-          { type: "resize-iframe", height: document.body.scrollHeight },
-          "*"
-        );
-      } catch (_) {
-        // ignore
-      }
-    };
+   Squarespace auto-resize (postMessage)
+   ========================================== */
+useEffect(() => {
+  const postHeight = () => {
+    window.parent.postMessage(
+      { type: "resize-iframe", height: document.body.scrollHeight },
+      "*"
+    );
+  };
 
-    // Initial post (helps prevent first-render squish)
-    postHeight();
+  // Initial fire
+  postHeight();
 
-    // Observe body size changes
-    const ro = new ResizeObserver(() => postHeight());
-    ro.observe(document.body);
+  // Watch for content size changes
+  const ro = new ResizeObserver(postHeight);
+  ro.observe(document.body);
 
-    // Fallback: also post on route/step changes
-    const onLoad = () => postHeight();
-    window.addEventListener("load", onLoad);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("load", onLoad);
-    };
-  }, []);
+  // Cleanup
+  return () => ro.disconnect();
+}, []);
 
   /* =========================
      Intro Screen
