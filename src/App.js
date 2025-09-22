@@ -161,7 +161,7 @@ const results = {
   },
 };
 
-// Brand styles
+/// Brand styles
 const sqsGreen = "#b9e085";
 const sqsGreenHover = "#a4cc73";
 const borderColor = "#3a3a3a";
@@ -229,11 +229,11 @@ export default function App() {
       name,
       email,
       gdpr,
-      answers,                    // ["A","B",...]
-      successPath: results[winner].label, // Impact/Growth/...
+      answers,                          // ["A","B",...]
+      successPath: results[winner].label, // Impact/Growth/Balance/Transformation
     };
-    // POST to Netlify function mapped at /api/log
-    fetch("/api/log", {
+
+    fetch("/api/saveResult", {           // ✅ FIXED: points to saveResult.js
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
