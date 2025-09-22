@@ -356,15 +356,17 @@ export default function App() {
             </label>
 
             <button
-              style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }}
+              style={{
+              ...btnGreen,
+              opacity: isFormValid ? 1 : 0.6,
               display: "inline-block",
               width: "auto",
               alignSelf: "center",
-              }}
-              disabled={!isFormValid}
-              onClick={() => setStep(1)}
-              onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
+            }}
+            disabled={!isFormValid}
+            onClick={() => setStep (1)}
+            onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
             >
               Start Quiz →
             </button>
@@ -407,7 +409,12 @@ export default function App() {
             dangerouslySetInnerHTML={{ __html: res.initial }}
           />
           <button
-            style={{ ...btnGreen }}
+            style={{
+              ...btnGreen,
+              display: "inline block",
+              width: "auto",
+              alignSelf: "center",
+            }}
             onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
             onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
             onClick={() => (window.location.href = res.url)}
