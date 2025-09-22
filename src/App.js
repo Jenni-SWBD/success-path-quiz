@@ -363,7 +363,7 @@ export default function App() {
               width: "fit-content",
             }}
             disabled={!isFormValid}
-            onClick={() => setStep (1)}
+            onClick={() => setStep(1)}
             onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
             onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
             >
