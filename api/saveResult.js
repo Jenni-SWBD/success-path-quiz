@@ -21,12 +21,12 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // Extract quiz data from request
+    // Extract quiz data from request (⚡ fixed key name)
     const { name, email, gdpr, answers, successPath } = req.body;
 
     // Spreadsheet details
     const spreadsheetId = "1a7XWCU2q2iqHfr8QaR52gxJFNZUid0pbZ4_fjmUPdpM"; // ✅ your sheet ID
-    const range = "Responses!A2:O"; // ✅ writes Date → Success Path only
+    const range = "Responses!A2:O"; // ✅ matches header row
 
     // Format today's date/time in UK style
     const now = new Date().toLocaleString("en-GB", { timeZone: "Europe/London" });
