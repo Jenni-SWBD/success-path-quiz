@@ -1,7 +1,5 @@
 // api/saveResult.js
 import { google } from "googleapis";
-import { promises as fs } from "fs";
-import path from "path";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -9,10 +7,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Load service account credentials
-    const filePath = path.join(process.cwd(), "config", "service-account.json");
-    const keyFile = await fs.readFile(filePath, "utf-8");
-    const credentials = JSON.parse(keyFile);
+    // Load service account credentials from Vercel env vars
+    const credentials = {
+      type: "service_account",
+      project_id: process.env.GOOGLE_PROJECT_ID,
+      private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+    };
 
     const auth = new google.auth.GoogleAuth({
       credentials,
@@ -31,7 +34,7 @@ export default async function handler(req, res) {
     } = req.body || {};
 
     const spreadsheetId = process.env.SHEET_ID;
-    const range = "Responses!A:O"; // Match your sheet structure
+    const range = "Responses!A:O"; // Match your sheet structure (15 columns)
 
     // Build a row with 15 columns (A → O)
     const row = [
@@ -47,16 +50,20 @@ export default async function handler(req, res) {
     console.log("saveResult API called with:", req.body);
     console.log("Appending row:", row);
 
-    await sheets.spreadsheets.values.append({
+    const response = await sheets.spreadsheets.values.append({
       spreadsheetId,
       range,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [row] },
     });
 
+    console.log("Google Sheets API response:", response.data);
+
     return res.status(200).json({ success: true });
   } catch (err) {
     console.error("saveResult error:", err?.response?.data || err.message || err);
-    return res.status(500).json({ error: err?.message || "Internal server error" });
+    return res
+      .status(500)
+      .json({ error: err?.message || "Internal server error" });
   }
 }
