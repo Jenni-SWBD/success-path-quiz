@@ -288,39 +288,38 @@ export default function App() {
 
           {/* Intro Text */}
           <h2
-  style={{
-    fontSize: 22,
-    fontWeight: 700,
-    marginBottom: 12,
-    color: "#028c8f",      // ✅ headline teal
-  }}
->
-  Discover Your Success Path
-</h2>
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              marginBottom: 12,
+              color: "#028c8f",
+            }}
+          >
+            Discover Your Success Path
+          </h2>
 
-<p
-  style={{
-    fontSize: 16,
-    lineHeight: 1.5,
-    marginBottom: 12,
-  }}
->
-  <b>Your energy already knows how to move.</b> This quiz helps you hear it so
-  you can step into your business flow.
-</p>
+          <p
+            style={{
+              fontSize: 16,
+              lineHeight: 1.5,
+              marginBottom: 12,
+            }}
+          >
+            <b>Your energy already knows how to move.</b> This quiz helps you hear it so
+            you can step into your business flow.
+          </p>
 
-<p
-  style={{
-    fontSize: 16,
-    lineHeight: 1.5,
-    marginBottom: 12,
-  }}
->
-  It’s not a personality test. It’s a precision tool that tunes you into your
-  most active Success Path: Impact, Growth, Balance or Transformation, to help
-  you align with the energy shaping what comes next.
-</p>
-
+          <p
+            style={{
+              fontSize: 16,
+              lineHeight: 1.5,
+              marginBottom: 12,
+            }}
+          >
+            It’s not a personality test. It’s a precision tool that tunes you into your
+            most active Success Path: Impact, Growth, Balance or Transformation, to help
+            you align with the energy shaping what comes next.
+          </p>
 
           {/* Form */}
           <div style={{ display: "grid", gap: 14 }}>
@@ -357,15 +356,15 @@ export default function App() {
 
             <button
               style={{
-              ...btnGreen,
-              opacity: isFormValid ? 1 : 0.6,
-              justifySelf: "center",
-              width: "fit-content",
-            }}
-            disabled={!isFormValid}
-            onClick={() => setStep(1)}
-            onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-            onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
+                ...btnGreen,
+                opacity: isFormValid ? 1 : 0.6,
+                justifySelf: "center",
+                width: "fit-content",
+              }}
+              disabled={!isFormValid}
+              onClick={() => setStep(1)}
+              onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
+              onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
             >
               Start Quiz →
             </button>
@@ -408,14 +407,14 @@ export default function App() {
             dangerouslySetInnerHTML={{ __html: res.initial }}
           />
           <button
-          style={{
-            ...btnGreen,
-            justifySelf: "center",
-            width: "fit-content",
-           }}
-           onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-           onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
-           onClick={() => (window.location.href = res.url)}
+            style={{
+              ...btnGreen,
+              justifySelf: "center",
+              width: "fit-content",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
+            onClick={() => (window.location.href = res.url)}
           >
             See Your Full Result →
           </button>
