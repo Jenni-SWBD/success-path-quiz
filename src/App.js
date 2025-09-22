@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import "./App.css";
 
-// 11 quiz questions
+// -------------------
+// Quiz Questions
+// -------------------
 const questions = [
   {
     text: "1. What’s been on your mind most in business lately?",
@@ -104,7 +107,9 @@ const questions = [
   },
 ];
 
-// Results content (full first-page text for each path)
+// -------------------
+// Results Content
+// -------------------
 const results = {
   A: {
     label: "Impact",
@@ -161,7 +166,9 @@ const results = {
   },
 };
 
-/// Brand styles
+// -------------------
+// Styles
+// -------------------
 const sqsGreen = "#b9e085";
 const sqsGreenHover = "#a4cc73";
 const borderColor = "#3a3a3a";
@@ -189,20 +196,44 @@ const btnWhite = {
   textAlign: "left",
 };
 
+// -------------------
+// App Component
+// -------------------
 export default function App() {
-  // Intro state
-  const [step, setStep] = useState(0); // 0 = intro, 1..11 = questions
+  const [step, setStep] = useState(0); // 0=intro, 1..11=questions
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gdpr, setGdpr] = useState(false);
 
-  // Quiz state
+  const [nameTouched, setNameTouched] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  const validateName = (v) => {
+    const t = v.trim();
+    if (!t) return "Name is required";
+    if (t.length < 2) return "Please enter at least 2 characters";
+    return "";
+  };
+
+  const validateEmail = (v) => {
+    const t = v.trim();
+    if (!t) return "Email is required";
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(t)) return "Please enter a valid email address";
+    return "";
+  };
+
+  const nameError = nameTouched ? validateName(name) : "";
+  const emailError = emailTouched ? validateEmail(email) : "";
+  const isFormValid =
+    validateName(name) === "" && validateEmail(email) === "" && gdpr;
+
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
 
   const handleAnswer = (letter) => {
     const next = [...answers];
-    next[step - 1] = letter; // because step 1 = Q1
+    next[step - 1] = letter;
     setAnswers(next);
     if (step < questions.length) setStep(step + 1);
     else setSubmitted(true);
@@ -215,12 +246,13 @@ export default function App() {
 
   const calcResult = () => {
     const tally = { A: 0, B: 0, C: 0, D: 0 };
-    answers.forEach((l) => { if (l) tally[l] += 1; });
+    answers.forEach((l) => {
+      if (l) tally[l] += 1;
+    });
     const max = Math.max(...Object.values(tally));
     return Object.keys(tally).find((k) => tally[k] === max);
   };
 
-  // Write to our serverless endpoint once, when submitted flips true
   useEffect(() => {
     if (!submitted) return;
     const winner = calcResult();
@@ -229,53 +261,78 @@ export default function App() {
       name,
       email,
       gdpr,
-      answers,                          // ["A","B",...]
-      successPath: results[winner].label, // Impact/Growth/Balance/Transformation
+      answers,
+      successPath: results[winner].label,
     };
 
-    fetch("/api/saveResult", {           // ✅ FIXED: points to saveResult.js
+    fetch("/api/saveResult", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    }).catch(() => {
-      // Silent fail: we still show result even if logging hiccups
-    });
-    // eslint-disable-next-line
+    }).catch(() => {});
   }, [submitted]);
 
-  // Intro screen
+  // -------------------
+  // Intro Screen
+  // -------------------
   if (step === 0) {
     return (
       <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#fff", padding: 24 }}>
         <div style={{ width: "100%", maxWidth: 600, borderRadius: 16, boxShadow: "0 6px 20px rgba(0,0,0,0.06)", padding: 40 }}>
-          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>Start the Success Path Quiz</h2>
+          {/* Hero Image */}
+          <img
+            src="/quiz-cover.png"
+            alt="Success Path Quiz"
+            style={{ width: "100%", borderRadius: 12, marginBottom: 20 }}
+          />
+
+          {/* Intro Text */}
+          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>
+            Discover Your Success Path
+          </h2>
+          <p style={{ fontSize: 16, lineHeight: 1.6, marginBottom: 24 }}>
+            Your energy already knows how to move. This quiz helps you tune into
+            the signal that’s loudest right now. Answer 11 short questions and
+            discover which path — Impact, Growth, Balance or Transformation —
+            is calling you forward.
+          </p>
+
+          {/* Form */}
           <div style={{ display: "grid", gap: 14 }}>
             <input
               type="text"
               placeholder="Your Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onBlur={() => setNameTouched(true)}
               style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc", fontSize: 16 }}
             />
+            {nameError && <div style={{ color: "red", fontSize: 14 }}>{nameError}</div>}
+
             <input
               type="email"
               placeholder="Your Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setEmailTouched(true)}
               style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc", fontSize: 16 }}
             />
-            <label style={{ fontSize: 14 }}>
+            {emailError && <div style={{ color: "red", fontSize: 14 }}>{emailError}</div>}
+
+            <label style={{ fontSize: 14, textAlign: "left" }}>
               <input
                 type="checkbox"
                 checked={gdpr}
                 onChange={(e) => setGdpr(e.target.checked)}
                 style={{ marginRight: 8 }}
               />
-              By entering your email, you agree to get your quiz results as well as insights and prompts for your next steps.
+              By entering your email, you agree to get your quiz results as well
+              as insights and prompts for your next steps.
             </label>
+
             <button
-              style={{ ...btnGreen, opacity: name && email && gdpr ? 1 : 0.6 }}
-              disabled={!name || !email || !gdpr}
+              style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }}
+              disabled={!isFormValid}
               onClick={() => setStep(1)}
               onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
               onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
@@ -288,7 +345,9 @@ export default function App() {
     );
   }
 
-  // Results screen
+  // -------------------
+  // Results Screen
+  // -------------------
   if (submitted) {
     const winner = calcResult();
     const res = results[winner];
@@ -331,7 +390,9 @@ export default function App() {
     );
   }
 
-  // Question screens
+  // -------------------
+  // Question Screens
+  // -------------------
   const q = questions[step - 1];
   const progress = Math.round(((step - 1) / questions.length) * 100);
 
@@ -363,8 +424,12 @@ export default function App() {
                   key={i}
                   onClick={() => handleAnswer(o.letter)}
                   style={{ ...btnWhite }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = sqsGreenHover; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = sqsGreenHover;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#fff";
+                  }}
                 >
                   {o.text}
                 </button>

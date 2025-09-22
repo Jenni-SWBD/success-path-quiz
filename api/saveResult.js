@@ -9,7 +9,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Load your service account JSON
     const filePath = path.join(process.cwd(), "config", "service-account.json");
     const keyFile = await fs.readFile(filePath, "utf-8");
     const credentials = JSON.parse(keyFile);
@@ -21,39 +20,23 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // Extract quiz data from request (⚡ fixed key name)
-    const { name, email, gdpr, answers, successPath } = req.body;
+    const { name = "", email = "", result = "" } = req.body || {};
 
-    // Spreadsheet details
-    const spreadsheetId = "1a7XWCU2q2iqHfr8QaR52gxJFNZUid0pbZ4_fjmUPdpM"; // ✅ your sheet ID
-    const range = "Responses!A2:O"; // ✅ matches header row
-
-    // Format today's date/time in UK style
-    const now = new Date().toLocaleString("en-GB", { timeZone: "Europe/London" });
-
-    // Row matches your header:
-    // Date | Name | Email | GDPR | Q1...Q11 | Success Path
-    const row = [
-      now,
-      name,
-      email,
-      gdpr ? "Yes" : "No",
-      ...answers,
-      successPath,
-    ];
+    const spreadsheetId = process.env.SHEET_ID;
+    const range = "Responses!A:D";
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range,
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [row],
+        values: [[new Date().toISOString(), name, email, result]],
       },
     });
 
-    return res.status(200).json({ message: "Saved to Google Sheets" });
-  } catch (error) {
-    console.error("Error saving result:", error);
-    return res.status(500).json({ error: "Failed to save result" });
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error("saveResult error:", err?.response?.data || err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
