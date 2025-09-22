@@ -283,7 +283,7 @@ export default function App() {
           <img
             src="/quiz-cover.png"
             alt="Success Path Quiz"
-            style={{ width: "100%", borderRadius: 12, marginBottom: 20 }}
+            style={{ width: "100%", borderRadius: 12, marginBottom: 12 }}
           />
 
           {/* Intro Text */}
@@ -357,6 +357,10 @@ export default function App() {
 
             <button
               style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }}
+              display: "inline-block",
+              width: "auto",
+              alignSelf: "center",
+              }}
               disabled={!isFormValid}
               onClick={() => setStep(1)}
               onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
