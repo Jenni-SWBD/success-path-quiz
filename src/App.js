@@ -565,7 +565,7 @@ export default function App() {
             onMouseLeave={(e) =>
               (e.currentTarget.style.background = sqsGreen)
             }
-            onClick={() => (window.location.href = res.url)}
+            onClick={() => (window.top.location.href = res.url)}
           >
             See Your Full Result →
           </button>
