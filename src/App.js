@@ -341,7 +341,7 @@ export default function App() {
   document.body.classList.add("fade-in");
 setTimeout(() => {
   document.body.classList.remove("fade-in");
-}, 600); // a little longer than the 0.5s transition
+}, 1800); // slightly longer than 1s transition
     return (
       <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
         <div
