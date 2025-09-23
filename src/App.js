@@ -176,7 +176,7 @@ const borderColor = "#3a3a3a";
 const btnGreen = {
   background: sqsGreen,
   color: "#000",
-  padding: "14px 22px",
+  padding: "8px 18px",
   border: `2px solid ${borderColor}`,
   borderRadius: 30,
   cursor: "pointer",
