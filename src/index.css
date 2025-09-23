@@ -11,3 +11,25 @@ h1, h2, h3 {
 button {
   font-family: 'Nunito Sans', Verdana, Arial, sans-serif;
 }
+/* === Global reset & scroll guard === */
+html, body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;   /* kill sideways scroll */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img, iframe, video {
+  max-width: 100%;
+  height: auto;
+}
+/* Debug mode - turn on if needed */
+/*
+* {
+  outline: 1px solid magenta;
+}
+*/
