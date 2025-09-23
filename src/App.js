@@ -346,7 +346,13 @@ export default function App() {
           <img
             src="/quiz-cover.png"
             alt="Success Path Quiz"
-            style={{ width: "100%", borderRadius: 8, marginBottom: 12 }}
+            style={{
+              width: "100%",
+              maxHeight: "220px",
+              objectFit: "cover",
+              borderRadius: 8,
+              marginBottom: 12,
+            }}
           />
 
           {/* Intro Text */}
