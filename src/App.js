@@ -386,9 +386,8 @@ export default function App() {
             }}
           >
             It’s not a personality test. It’s a precision tool that tunes you
-            into your most active Success Path: Impact, Growth, Balance or
-            Transformation, to help you align with the energy shaping what comes
-            next.
+            into your most active Success Path to help you align with the energy
+            shaping what comes next.
           </p>
 
           {/* Form */}
