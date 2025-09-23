@@ -338,6 +338,7 @@ export default function App() {
      Intro Screen
      ========================= */
   if (step === 0) {
+  document.body.classList.add("fade-in"); 
     return (
       <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
         <div
@@ -565,7 +566,18 @@ export default function App() {
             onMouseLeave={(e) =>
               (e.currentTarget.style.background = sqsGreen)
             }
-            onClick={() => (window.top.location.href = res.url)}
+            onClick={() => {
+              if (window.gtag) {
+      window.gtag("event", "view_full_result", {
+        event_category: "Quiz",
+        event_label: res.label,
+      });
+    }
+    document.body.classList.add("fade-out");
+    setTimeout(() => {
+      window.top.location.href = res.url;
+    }, 500);
+  }}
           >
             See Your Full Result →
           </button>

@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+/* =========================================================
+   Fade effects for quiz
+   ========================================================= */
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
