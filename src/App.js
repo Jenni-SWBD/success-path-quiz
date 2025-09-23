@@ -338,7 +338,10 @@ export default function App() {
      Intro Screen
      ========================= */
   if (step === 0) {
-  document.body.classList.add("fade-in"); 
+  document.body.classList.add("fade-in");
+setTimeout(() => {
+  document.body.classList.remove("fade-in");
+}, 600); // a little longer than the 0.5s transition
     return (
       <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
         <div
