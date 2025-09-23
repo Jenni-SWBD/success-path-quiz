@@ -243,14 +243,23 @@ export default function App() {
     const t2 = setTimeout(postHeight, 400);
     const t3 = setTimeout(postHeight, 800);
 
-    // Cleanup
-    return () => {
-      ro.disconnect();
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
-  }, [step]);
+    // Fire again after step change with a delay
+  setTimeout(() => {
+    try {
+      window.parent.postMessage(
+        { type: "resize-iframe", height: document.body.scrollHeight },
+        "*"
+      );
+    } catch (_) {}
+  }, 200);
+
+  return () => {
+    ro.disconnect();
+    clearTimeout(t1);
+    clearTimeout(t2);
+    clearTimeout(t3);
+  };
+}, [step]);
 
   /* ==========================================
      Validation helpers
