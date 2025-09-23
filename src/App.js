@@ -250,7 +250,7 @@ export default function App() {
       clearTimeout(t2);
       clearTimeout(t3);
     };
-  }, []);
+  }, [step]);
 
   /* ==========================================
      Validation helpers
