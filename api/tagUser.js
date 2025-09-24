@@ -1,17 +1,14 @@
 export default async function handler(req, res) {
-  // Only allow POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { email, result } = req.body;
 
-  // Validate incoming data
   if (!email || !result) {
     return res.status(400).json({ error: "Missing email or result" });
   }
 
-  // Map quiz results to Kit tag IDs
   const TAG_MAP = {
     Impact: "8184863",
     Growth: "8184865",
@@ -25,7 +22,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Create or update subscriber
     const subResp = await fetch("https://api.kit.com/v4/subscribers", {
       method: "POST",
       headers: {
@@ -40,13 +36,13 @@ export default async function handler(req, res) {
       throw new Error(`Subscriber request failed: ${subResp.status} ${errText}`);
     }
 
-    const subscriber = await subResp.json();
+    const subData = await subResp.json();
+    const subscriber = subData.subscriber;
 
     if (!subscriber || !subscriber.id) {
       throw new Error("Subscriber creation/update failed: no ID returned");
     }
 
-    // 2. Apply tag to subscriber
     const tagResp = await fetch(
       `https://api.kit.com/v4/subscribers/${subscriber.id}/tags`,
       {
@@ -66,7 +62,6 @@ export default async function handler(req, res) {
 
     const tagResult = await tagResp.json();
 
-    // Success response
     return res.status(200).json({
       success: true,
       message: `Tagged ${email} with ${result}`,
