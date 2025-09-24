@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
-// Fire tag to your Vercel function
+// --- KIT tagging helper ---
 async function tagWithKit(email, result) {
   if (!email || !result) return;
   try {
     await fetch("/api/tagUser", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, result })
+      body: JSON.stringify({ email, result }),
     });
   } catch (_) {
     // keep UX smooth
@@ -26,8 +26,8 @@ const questions = [
       { text: "A. Being seen and heard more clearly", letter: "A" },
       { text: "B. Reaching more people in the right way", letter: "B" },
       { text: "C. Slowing down to reconnect with what matters", letter: "C" },
-      { text: "D. Changing direction or letting something go", letter: "D" }
-    ]
+      { text: "D. Changing direction or letting something go", letter: "D" },
+    ],
   },
   {
     text: "2. What's feeling heavy right now?",
@@ -35,8 +35,8 @@ const questions = [
       { text: "A. Holding myself back, stagnating", letter: "A" },
       { text: "B. The pressure to keep pushing", letter: "B" },
       { text: "C. Constant juggling and overdoing", letter: "C" },
-      { text: "D. The sense that something’s ending, outdated or uncertain", letter: "D" }
-    ]
+      { text: "D. The sense that something’s ending, outdated or uncertain", letter: "D" },
+    ],
   },
   {
     text: "3. Which of these excites you the most right now?",
@@ -44,8 +44,8 @@ const questions = [
       { text: "A. Sharing my voice and message", letter: "A" },
       { text: "B. Creating new offers and opportunities", letter: "B" },
       { text: "C. Building a life-business rhythm that fits me", letter: "C" },
-      { text: "D. Exploring a bolder, newer version of my work", letter: "D" }
-    ]
+      { text: "D. Exploring a bolder, newer version of my work", letter: "D" },
+    ],
   },
   {
     text: "4. What’s one thing you wish felt easier?",
@@ -53,8 +53,8 @@ const questions = [
       { text: "A. Showing up fully as myself", letter: "A" },
       { text: "B. Expanding my work in a way that feels aligned", letter: "B" },
       { text: "C. Managing my energy and time", letter: "C" },
-      { text: "D. Trusting big transitions", letter: "D" }
-    ]
+      { text: "D. Trusting big transitions", letter: "D" },
+    ],
   },
   {
     text: "5. Which describes your current focus best?",
@@ -62,8 +62,8 @@ const questions = [
       { text: "A. Leading with my presence and purpose", letter: "A" },
       { text: "B. Growing my business with clarity and confidence", letter: "B" },
       { text: "C. Realigning my vision with my values and needs", letter: "C" },
-      { text: "D. Reimagining what success can look like for me", letter: "D" }
-    ]
+      { text: "D. Reimagining what success can look like for me", letter: "D" },
+    ],
   },
   {
     text: "6. What’s calling you forward right now?",
@@ -71,8 +71,8 @@ const questions = [
       { text: "A. Greater visibility and influence", letter: "A" },
       { text: "B. Sustainable, soul-aligned success", letter: "B" },
       { text: "C. A return to flow and inner clarity", letter: "C" },
-      { text: "D. A full-soul pivot or transformation", letter: "D" }
-    ]
+      { text: "D. A full-soul pivot or transformation", letter: "D" },
+    ],
   },
   {
     text: "7. What tends to derail you?",
@@ -80,8 +80,8 @@ const questions = [
       { text: "A. Fear of being too much or not enough", letter: "A" },
       { text: "B. Chasing results that drain me", letter: "B" },
       { text: "C. Ignoring my own needs", letter: "C" },
-      { text: "D. Staying stuck in the old version of me", letter: "D" }
-    ]
+      { text: "D. Staying stuck in the old version of me", letter: "D" },
+    ],
   },
   {
     text: "8. How do you usually reset when things feel off?",
@@ -89,8 +89,8 @@ const questions = [
       { text: "A. Reconnect with my why and speak it out loud", letter: "A" },
       { text: "B. Rework my plans or get clearer strategy", letter: "B" },
       { text: "C. Take a step back and restore my energy", letter: "C" },
-      { text: "D. Dive into deep reflection or journalling", letter: "D" }
-    ]
+      { text: "D. Dive into deep reflection or journalling", letter: "D" },
+    ],
   },
   {
     text: "9. What do you most want in this next phase?",
@@ -98,8 +98,8 @@ const questions = [
       { text: "A. To feel seen, trusted and in my power", letter: "A" },
       { text: "B. To grow in a way that lasts", letter: "B" },
       { text: "C. To feel spacious, present and aligned", letter: "C" },
-      { text: "D. To grow into the next better version of myself", letter: "D" }
-    ]
+      { text: "D. To grow into the next better version of myself", letter: "D" },
+    ],
   },
   {
     text: "10. When things feel uncertain, what’s your go-to response pattern?",
@@ -107,8 +107,8 @@ const questions = [
       { text: "A. I step into control mode, clarity comes when I take the lead", letter: "A" },
       { text: "B. I get restless or try to fix it by doing more", letter: "B" },
       { text: "C. I shut down or quietly check out to protect my energy", letter: "C" },
-      { text: "D. I spiral a little... old fears flare up and I question everything", letter: "D" }
-    ]
+      { text: "D. I spiral a little... old fears flare up and I question everything", letter: "D" },
+    ],
   },
   {
     text: "11. Which belief are you most ready to let go of even if part of you still clings to it?",
@@ -116,9 +116,9 @@ const questions = [
       { text: "A. That I have to tone myself down to be accepted", letter: "A" },
       { text: "B. That I need to earn rest by proving my worth", letter: "B" },
       { text: "C. That I’m only valuable when I’m useful to others", letter: "C" },
-      { text: "D. That I need to have it all figured out before I take the next step", letter: "D" }
-    ]
-  }
+      { text: "D. That I need to have it all figured out before I take the next step", letter: "D" },
+    ],
+  },
 ];
 
 /* =========================================================
@@ -136,7 +136,7 @@ const results = {
 <p>For deeper insight and to connect with the energy of visibility, I've created a free <b>Impact Path guided visualisation</b> for you.</p>
 <p>It’s short but powerful, designed to help you drop the filters and tune in to the truth of your own voice.</p>
 <p>Let it land, don’t overthink it.</p>
-    `
+    `,
   },
   B: {
     label: "Growth",
@@ -149,7 +149,7 @@ const results = {
 <p>Let your growth be something you can <i>live</i>, not just measure.</p>
 <p>To support you, I’ve recorded a free <b>Growth Path visualisation</b> to help clear the static, reconnect with what truly moves you and feel the energy behind your expansion.</p>
 <p>Use it whenever you want to return to your own pace and wisdom.</p>
-    `
+    `,
   },
   C: {
     label: "Balance",
@@ -163,7 +163,7 @@ const results = {
 <p>For a deep experience of what it feels like to embrace the energy of Balance, I invite you to listen to the <b>Balance Path guided visualisation</b> as a gift from me to you.</p>
 <p>It's short, effective and will help you settle the mind chatter, return to centre and feel what wants to find its own natural rhythm.</p>
 <p>Let yourself be present with it. There's nothing for you to do or be, just notice what you notice.</p>
-    `
+    `,
   },
   D: {
     label: "Transformation",
@@ -176,8 +176,8 @@ const results = {
 <p><b>There’s no rush to try and figure it all out.</b> You’re not lost. You’re being remade. Just tune in, feel the shift and trust what begins to move.</p>
 <p>For deeper insight and to support your transformation, I invite you to listen to the <b>Transformation Path guided visualisation</b> I've created for you.</p>
 <p>It’s short but powerful, designed to help you loosen what’s ready to release and welcome in the new energy that's rising for you.</p>
-    `
-  }
+    `,
+  },
 };
 
 /* =========================================================
@@ -195,7 +195,7 @@ const btnGreen = {
   borderRadius: 30,
   cursor: "pointer",
   fontSize: 16,
-  fontWeight: 700
+  fontWeight: 700,
 };
 
 const btnWhite = {
@@ -207,7 +207,7 @@ const btnWhite = {
   cursor: "pointer",
   fontSize: 18,
   fontWeight: 400,
-  textAlign: "left"
+  textAlign: "left",
 };
 
 /* =========================================================
@@ -240,7 +240,9 @@ export default function App() {
           { type: "resize-iframe", height: document.body.scrollHeight },
           "*"
         );
-      } catch (_) {}
+      } catch (_) {
+        // ignore cross-origin errors
+      }
     };
 
     // Initial fire
@@ -323,7 +325,6 @@ export default function App() {
 
   /* ==========================================
      Persist to Google Sheets (once on submit)
-     + also stash email/result for tagging
      ========================================== */
   useEffect(() => {
     if (!submitted) return;
@@ -334,10 +335,10 @@ export default function App() {
       email,
       gdpr,
       answers,
-      successPath: results[winner].label
+      successPath: results[winner].label,
     };
 
-    // persist for Results screen safety
+    // stash for Results screen + tagging fallback
     try {
       localStorage.setItem("quizEmail", email);
       localStorage.setItem("quizResult", results[winner].label);
@@ -346,12 +347,39 @@ export default function App() {
     fetch("/api/saveResult", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     }).catch(() => {
       // Silent fail; UI still shows result
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitted]);
+
+  /* ==========================================
+     --- Top-level KIT tagging effect ---
+     Fires once when submitted & Results is determined.
+     ========================================== */
+  const winnerSubmitted = submitted ? calcResult() : null;
+  const resSubmitted = winnerSubmitted ? results[winnerSubmitted] : null;
+  const taggedRef = useRef(false);
+
+  useEffect(() => {
+    if (!submitted || taggedRef.current) return;
+
+    const emailForTag =
+      email ||
+      (typeof window !== "undefined" && localStorage.getItem("quizEmail")) ||
+      "";
+
+    const resultForTag =
+      resSubmitted?.label ||
+      (typeof window !== "undefined" && localStorage.getItem("quizResult")) ||
+      "";
+
+    if (!emailForTag || !resultForTag) return;
+
+    taggedRef.current = true;
+    tagWithKit(emailForTag, resultForTag);
+  }, [submitted, email, resSubmitted?.label]);
 
   /* =========================
      Intro Screen
@@ -360,8 +388,7 @@ export default function App() {
     document.body.classList.add("fade-in");
     setTimeout(() => {
       document.body.classList.remove("fade-in");
-    }, 1800);
-
+    }, 1800); // slightly longer than 1s transition
     return (
       <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
         <div
@@ -372,7 +399,7 @@ export default function App() {
             boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
             padding: 24,
             margin: "20px auto",
-            background: "#fff"
+            background: "#fff",
           }}
         >
           {/* Hero Image */}
@@ -384,7 +411,7 @@ export default function App() {
               maxHeight: "220px",
               objectFit: "cover",
               borderRadius: 8,
-              marginBottom: 12
+              marginBottom: 12,
             }}
           />
 
@@ -394,18 +421,30 @@ export default function App() {
               fontSize: 22,
               fontWeight: 700,
               marginBottom: 12,
-              color: "#028c8f"
+              color: "#028c8f",
             }}
           >
             Discover Your Success Path
           </h2>
 
-          <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
+          <p
+            style={{
+              fontSize: 16,
+              lineHeight: 1.5,
+              marginBottom: 12,
+            }}
+          >
             <b>Your energy already knows how to move.</b> This quiz helps you
             hear it so you can step into your business flow.
           </p>
 
-          <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 16 }}>
+          <p
+            style={{
+              fontSize: 16,
+              lineHeight: 1.5,
+              marginBottom: 16,
+            }}
+          >
             It’s not a personality test. It’s a precision tool that tunes you
             into your most active Success Path to help you align with the energy
             shaping what comes next.
@@ -433,7 +472,7 @@ export default function App() {
                   padding: 12,
                   borderRadius: 8,
                   border: "1px solid #ccc",
-                  fontSize: 16
+                  fontSize: 16,
                 }}
               />
               {nameError && (
@@ -466,7 +505,7 @@ export default function App() {
                   padding: 12,
                   borderRadius: 8,
                   border: "1px solid #ccc",
-                  fontSize: 16
+                  fontSize: 16,
                 }}
               />
               {emailError && (
@@ -486,7 +525,7 @@ export default function App() {
                 onChange={(e) => setGdpr(e.target.checked)}
                 style={{ marginRight: 8 }}
               />
-              By entering your email you agree to get your quiz results as well
+              By entering your email, you agree to get your quiz results as well
               as insights and prompts for your next steps.
             </label>
 
@@ -495,7 +534,7 @@ export default function App() {
                 ...btnGreen,
                 opacity: isFormValid ? 1 : 0.6,
                 justifySelf: "center",
-                width: "fit-content"
+                width: "fit-content",
               }}
               disabled={!isFormValid}
               onClick={() => setStep(1)}
@@ -518,25 +557,7 @@ export default function App() {
      Results Screen
      ========================= */
   if (submitted) {
-    const winner = calcResult();
-    const res = results[winner];
-
-    // tag once on mount
-    const taggedRef = useRef(false);
-    useEffect(() => {
-      const emailForTag =
-        email ||
-        (typeof window !== "undefined" && localStorage.getItem("quizEmail")) ||
-        "";
-      const resultForTag =
-        res.label ||
-        (typeof window !== "undefined" && localStorage.getItem("quizResult")) ||
-        "";
-      if (taggedRef.current) return;
-      if (!emailForTag || !resultForTag) return;
-      taggedRef.current = true;
-      tagWithKit(emailForTag, resultForTag);
-    }, [email, res.label]);
+    const res = resSubmitted;
 
     return (
       <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
@@ -549,7 +570,7 @@ export default function App() {
             padding: 24,
             margin: "20px auto",
             textAlign: "center",
-            background: "#fff"
+            background: "#fff",
           }}
         >
           <motion.h2
@@ -559,7 +580,7 @@ export default function App() {
               fontSize: 26,
               fontWeight: 700,
               marginBottom: 16,
-              color: res.colour
+              color: res.colour,
             }}
           >
             Your Success Path is… {res.label}
@@ -577,7 +598,7 @@ export default function App() {
               background: `${res.colour}15`,
               border: `1px solid ${res.colour}40`,
               lineHeight: 1.8,
-              fontSize: 16
+              fontSize: 16,
             }}
             dangerouslySetInnerHTML={{ __html: res.initial }}
           />
@@ -586,7 +607,7 @@ export default function App() {
             style={{
               ...btnGreen,
               justifySelf: "center",
-              width: "fit-content"
+              width: "fit-content",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.background = sqsGreenHover)
@@ -598,7 +619,7 @@ export default function App() {
               if (window.gtag) {
                 window.gtag("event", "view_full_result", {
                   event_category: "Quiz",
-                  event_label: res.label
+                  event_label: res.label,
                 });
               }
               document.body.classList.add("fade-out");
@@ -630,7 +651,7 @@ export default function App() {
           boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           padding: 24,
           margin: "20px auto",
-          background: "#fff"
+          background: "#fff",
         }}
       >
         {/* Progress */}
@@ -642,7 +663,7 @@ export default function App() {
                 height: "100%",
                 background: "#028c8f",
                 borderRadius: 999,
-                transition: "width 200ms ease"
+                transition: "width 200ms ease",
               }}
             />
           </div>
