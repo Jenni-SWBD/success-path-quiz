@@ -22,6 +22,7 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 1. Create or update subscriber
     const subResp = await fetch("https://api.kit.com/v4/subscribers", {
       method: "POST",
       headers: {
@@ -43,17 +44,18 @@ export default async function handler(req, res) {
       throw new Error("Subscriber creation/update failed: no ID returned");
     }
 
-    const tagResp = await fetch(
-      `https://api.kit.com/v4/subscribers/${subscriber.id}/tags`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Kit-Api-Key": process.env.KIT_API_KEY
-        },
-        body: JSON.stringify({ tag_id: tagId })
-      }
-    );
+    // 2. Apply tag to subscriber
+    const tagResp = await fetch("https://api.kit.com/v4/tags/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Kit-Api-Key": process.env.KIT_API_KEY
+      },
+      body: JSON.stringify({
+        tag_id: tagId,
+        subscriber_id: subscriber.id
+      })
+    });
 
     if (!tagResp.ok) {
       const errText = await tagResp.text();
