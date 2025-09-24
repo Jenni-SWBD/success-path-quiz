@@ -32,7 +32,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
         "X-Kit-Api-Key": process.env.KIT_API_KEY
       },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email_address: email })
     });
 
     if (!subResp.ok) {
@@ -81,4 +81,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
