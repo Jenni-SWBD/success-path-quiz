@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
-// --- KIT tagging helper ---
+// --- KIT tagging helper (auto-clears localStorage) ---
 async function tagWithKit(email, result) {
   if (!email || !result) return;
   try {
@@ -11,8 +11,11 @@ async function tagWithKit(email, result) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, result }),
     });
-  } catch (_) {
-    // keep UX smooth
+  } finally {
+    try {
+      localStorage.removeItem("quizEmail");
+      localStorage.removeItem("quizResult");
+    } catch {}
   }
 }
 
@@ -378,6 +381,7 @@ export default function App() {
     if (!emailForTag || !resultForTag) return;
 
     taggedRef.current = true;
+    // fire (helper will auto-clear localStorage)
     tagWithKit(emailForTag, resultForTag);
   }, [submitted, email, resSubmitted?.label]);
 
