@@ -170,7 +170,6 @@ export default function App() {
   const validateEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   const isFormValid = name.trim().length > 1 && validateEmail(email) && gdpr;
 
-  // Load font + decide starting view
   useEffect(() => {
     ensurePoppins();
     const params = new URLSearchParams(window.location.search);
@@ -180,7 +179,6 @@ export default function App() {
     } else setPhase("form");
   }, []);
 
-  // Resize observer for Squarespace embed
   useEffect(() => {
     const postHeight = () => {
       try {
@@ -255,37 +253,98 @@ export default function App() {
 
   if (phase === "form")
     return (
-      <div style={{ fontFamily: "Poppins, sans-serif", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "40px 0" }}>
-        <div style={{ width: "100%", maxWidth: 600, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, background: "#fff" }}>
+      <div
+        style={{
+          fontFamily: "Poppins, sans-serif",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          background: "#fff",
+          padding: "60px 16px",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 640,
+            borderRadius: 16,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+            padding: 32,
+            background: "#fff",
+            textAlign: "left",
+            lineHeight: 1.6,
+          }}
+        >
           <img
             src={`${process.env.PUBLIC_URL || ""}/quiz-cover.png`}
             alt="Success Path Quiz"
-            style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 8, marginBottom: 16, display: "block" }}
+            style={{
+              width: "100%",
+              height: "auto",
+              maxHeight: 260,
+              objectFit: "cover",
+              borderRadius: 10,
+              marginBottom: 20,
+            }}
           />
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#028c8f", marginBottom: 8 }}>Discover Your Success Path</h2>
-          <p style={{ fontSize: 15, marginBottom: 16, lineHeight: 1.5 }}>
-            <b>Your energy already knows how to move.</b> This quiz helps you hear it so you can step into your business flow.
+          <h2
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              color: "#028c8f",
+              marginBottom: 10,
+            }}
+          >
+            Discover Your Success Path
+          </h2>
+          <p style={{ fontSize: 15, marginBottom: 18 }}>
+            <b>Your energy already knows how to move.</b> This quiz helps you hear
+            it so you can step into your business flow.
           </p>
-          <label>Name</label>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc", fontFamily: "Poppins, sans-serif" }}
-          />
-          <label>Email</label>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc", fontFamily: "Poppins, sans-serif" }}
-          />
-          <label style={{ fontSize: 14 }}>
-            <input type="checkbox" checked={gdpr} onChange={(e) => setGdpr(e.target.checked)} style={{ marginRight: 8 }} /> 
-            By entering your email, you agree to receive your quiz results and next-step insights.
-          </label>
-          <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
-            <button style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }} disabled={!isFormValid} onClick={handleStartClick}>
-              Start Quiz →
-            </button>
+
+          <div style={{ display: "grid", gap: 14 }}>
+            <label>Name</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={{
+                padding: 12,
+                borderRadius: 8,
+                border: "1px solid #ccc",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            />
+            <label>Email</label>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{
+                padding: 12,
+                borderRadius: 8,
+                border: "1px solid #ccc",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            />
+            <label style={{ fontSize: 14, lineHeight: 1.4 }}>
+              <input
+                type="checkbox"
+                checked={gdpr}
+                onChange={(e) => setGdpr(e.target.checked)}
+                style={{ marginRight: 8 }}
+              />
+              By entering your email, you agree to receive your quiz results and
+              next-step insights.
+            </label>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+              <button
+                style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }}
+                disabled={!isFormValid}
+                onClick={handleStartClick}
+              >
+                Start Quiz →
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -328,13 +387,4 @@ export default function App() {
 
   if (phase === "result" && resultData)
     return (
-      <div style={{ fontFamily: "Poppins, sans-serif", display: "grid", placeItems: "center", background: "#fff" }}>
-        <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", textAlign: "center", background: "#fff" }}>
-          <h2 style={{ fontSize: 26, fontWeight: 700, marginBottom: 16, color: resultData.colour }}>Your Success Path is… {resultData.label}</h2>
-          <button style={btnGreen} onClick={() => (window.top.location.href = resultData.url)}>See Your Full Result →</button>
-        </div>
-      </div>
-    );
-
-  return null;
-}
+      <div style={{ fontFamily:
