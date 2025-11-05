@@ -1,19 +1,30 @@
-// pages/api/saveResult.js
+// /api/saveResult.js
 import { google } from "googleapis";
 
 export default async function handler(req, res) {
+  // Only accept POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
+    console.log("saveResult invoked:", req.body);
+
     const { name, email, answers, successPath, gdpr, dateISO } = req.body;
 
+    // Quick sanity check for required data
     if (!name || !email || !answers || !successPath) {
+      console.error("Missing required fields:", { name, email, answers, successPath });
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Authenticate with Google Sheets
+    // Validate Google credentials exist
+    if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY || !process.env.SHEET_ID) {
+      console.error("Missing Google env vars");
+      return res.status(500).json({ error: "Server not configured" });
+    }
+
+    // Authenticate with Google Sheets API
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -24,34 +35,42 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // Spreadsheet ID + Tab name
     const spreadsheetId = process.env.SHEET_ID;
-    const range = "Responses!A:Q"; // Covers Date → KIT Tag Date
+    const range = "Responses!A:Q"; // Columns A–Q (17 total fields)
 
-    // Build row data (17 values total)
+    // Build new row
     const row = [
-      dateISO || new Date().toISOString(), // A Date
-      name,                                // B Name
-      email,                               // C Email
-      ...(answers || []),                  // D–N (Q1–Q11)
-      successPath,                         // O Success Path
-      "",                                  // P Daily Log Date
-      ""                                   // Q KIT Tag Date
+      dateISO || new Date().toISOString(), // A: Date
+      name,                                // B: Name
+      email,                               // C: Email
+      ...(answers || []),                  // D–N: Quiz answers
+      successPath,                         // O: Success Path
+      "",                                  // P: Daily Log Date (blank)
+      "",                                  // Q: KIT Tag Date (blank)
     ];
 
-    // Append row
-    await sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range,
-      valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values: [row],
-      },
-    });
+    // Log for visibility
+    console.log("Appending row to Google Sheet:", row);
 
+    // Timeout wrapper to prevent hanging
+    const timeout = (ms) =>
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
+
+    // Append with 8-second safety timeout
+    await Promise.race([
+      sheets.spreadsheets.values.append({
+        spreadsheetId,
+        range,
+        valueInputOption: "USER_ENTERED",
+        requestBody: { values: [row] },
+      }),
+      timeout(8000),
+    ]);
+
+    console.log("Row successfully appended");
     return res.status(200).json({ message: "Saved successfully" });
   } catch (err) {
-    console.error("saveResult error:", err);
+    console.error("saveResult error:", err.message);
     return res.status(500).json({ error: err.message });
   }
 }
