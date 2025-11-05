@@ -8,6 +8,14 @@ export default async function handler(req, res) {
   }
 
   try {
+    // --- NEW DEBUG BLOCK ---
+    console.log("Environment check:", {
+      client: !!process.env.GOOGLE_CLIENT_EMAIL,
+      key: !!process.env.GOOGLE_PRIVATE_KEY,
+      sheet: !!process.env.SHEET_ID
+    });
+    // ------------------------
+
     console.log("saveResult invoked:", req.body);
 
     const { name, email, answers, successPath, gdpr, dateISO } = req.body;
