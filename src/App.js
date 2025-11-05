@@ -11,7 +11,9 @@ async function tagWithKit(email, result) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, result }),
     });
-  } catch {}
+  } catch (err) {
+    console.error("tagWithKit error:", err);
+  }
 }
 
 const questions = [
@@ -106,7 +108,6 @@ export default function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gdpr, setGdpr] = useState(false);
-  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
@@ -143,33 +144,42 @@ export default function App() {
     localStorage.setItem("quizEmail", email);
 
     try {
-      const resp = await fetch("/api/subscribe", {
+      console.log("Posting to /api/saveResult...");
+      const resp = await fetch("/api/saveResult", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, first_name: name }),
+        body: JSON.stringify({ name, email }),
       });
 
       const data = await resp.json();
+      console.log("Response from /api/saveResult:", data);
       if (data.ok) {
-        setAwaitingConfirmation(true);
+        setStep(1);
       } else {
-        setResendMessage(data.message || "Could not start confirmation. Try again later.");
+        setResendMessage(data.message || "Could not start quiz. Try again later.");
       }
-    } catch {
-      setResendMessage("Could not start confirmation. Try again later.");
+    } catch (err) {
+      console.error("Error starting quiz:", err);
+      setResendMessage("Could not start quiz. Try again later.");
     }
   }
 
   async function handleResendClick() {
     try {
-      await fetch("/api/subscribe", {
+      const resp = await fetch("/api/saveResult", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, first_name: name }),
+        body: JSON.stringify({ name, email, resend: true }),
       });
-      setResendMessage("Resent. Please recheck your inbox.");
-      setTimeout(() => setResendMessage(""), 5000);
-    } catch {
+      const data = await resp.json();
+      if (data.ok) {
+        setResendMessage("Resent. Please recheck your inbox.");
+        setTimeout(() => setResendMessage(""), 5000);
+      } else {
+        setResendMessage("Resend failed. Please try again later.");
+      }
+    } catch (err) {
+      console.error("Error resending:", err);
       setResendMessage("Resend failed. Please try again later.");
     }
   }
@@ -181,17 +191,6 @@ export default function App() {
     if (step < questions.length) setStep(step + 1);
     else setSubmitted(true);
   };
-
-  if (awaitingConfirmation)
-    return (
-      <div style={{ fontFamily: "Poppins", textAlign: "center", padding: "40px 0" }}>
-        <h3>Please check your inbox to confirm your email address</h3>
-        <p>Your confirmation has been sent to <b>{email}</b>.</p>
-        <p style={{ fontSize: 13, color: "#666" }}>If you don’t see it, check spam or click resend</p>
-        <button style={btnGreen} onClick={handleResendClick}>Resend confirmation</button>
-        {resendMessage && <p style={{ color: "#028c8f", marginTop: 10 }}>{resendMessage}</p>}
-      </div>
-    );
 
   if (step === 0)
     return (
@@ -212,6 +211,7 @@ export default function App() {
             <div style={{ textAlign: "center" }}>
               <button style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }} disabled={!isFormValid} onClick={handleStartClick}>Start Quiz →</button>
             </div>
+            {resendMessage && <p style={{ color: "#028c8f", marginTop: 10 }}>{resendMessage}</p>}
           </div>
         </div>
       </div>
