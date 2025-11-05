@@ -283,7 +283,7 @@ export default function App() {
           }}
         >
           <h3 style={{ color: "#028c8f", fontWeight: 700, fontSize: 22 }}>
-            Thanks for confirming — here’s your quiz
+            Thanks for confirming — enjoy the quiz
           </h3>
         </motion.div>
       </div>
