@@ -5,23 +5,11 @@ import "./App.css";
 
 // --- FONT SETUP ---
 function ensurePoppins() {
-  const preconnect1 = document.createElement("link");
-  preconnect1.rel = "preconnect";
-  preconnect1.href = "https://fonts.googleapis.com";
-  const preconnect2 = document.createElement("link");
-  preconnect2.rel = "preconnect";
-  preconnect2.href = "https://fonts.gstatic.com";
-  preconnect2.crossOrigin = "true";
-  const preload = document.createElement("link");
-  preload.rel = "preload";
-  preload.as = "style";
-  preload.href =
-    "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap";
   const link = document.createElement("link");
   link.rel = "stylesheet";
   link.href =
     "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap";
-  document.head.append(preconnect1, preconnect2, preload, link);
+  document.head.appendChild(link);
 }
 
 // --- HELPERS ---
@@ -43,16 +31,13 @@ async function saveResultToSheet(data) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    if (!resp.ok) {
-      const msg = await resp.text();
-      console.error("SaveResult failed:", msg);
-    }
+    if (!resp.ok) console.error("SaveResult failed:", await resp.text());
   } catch (err) {
     console.error("SaveResult error:", err);
   }
 }
 
-// --- QUIZ CONTENT ---
+// --- QUIZ QUESTIONS ---
 const questions = [
   {
     text: "1. What’s been on your mind most in business lately?",
@@ -99,10 +84,7 @@ const questions = [
       { text: "A. Leading with my presence and purpose", letter: "A" },
       { text: "B. Growing my business with clarity and confidence", letter: "B" },
       { text: "C. Realigning my vision with my values and needs", letter: "C" },
-      {
-        text: "D. Reimagining what success can look like for me",
-        letter: "D",
-      },
+      { text: "D. Reimagining what success can look like for me", letter: "D" },
     ],
   },
   {
@@ -126,10 +108,7 @@ const questions = [
   {
     text: "8. How do you usually reset when things feel off?",
     options: [
-      {
-        text: "A. Reconnect with my why and speak it out loud",
-        letter: "A",
-      },
+      { text: "A. Reconnect with my why and speak it out loud", letter: "A" },
       { text: "B. Rework my plans or get clearer strategy", letter: "B" },
       { text: "C. Take a step back and restore my energy", letter: "C" },
       { text: "D. Dive into deep reflection or journalling", letter: "D" },
@@ -151,10 +130,7 @@ const questions = [
         text: "A. I step into control mode, clarity comes when I take the lead",
         letter: "A",
       },
-      {
-        text: "B. I get restless or try to fix it by doing more",
-        letter: "B",
-      },
+      { text: "B. I get restless or try to fix it by doing more", letter: "B" },
       {
         text: "C. I shut down or quietly check out to protect my energy",
         letter: "C",
@@ -170,10 +146,7 @@ const questions = [
     options: [
       { text: "A. That I have to tone myself down to be accepted", letter: "A" },
       { text: "B. That I need to earn rest by proving my worth", letter: "B" },
-      {
-        text: "C. That I’m only valuable when I’m useful to others",
-        letter: "C",
-      },
+      { text: "C. That I’m only valuable when I’m useful to others", letter: "C" },
       {
         text: "D. That I need to have it all figured out before I take the next step",
         letter: "D",
@@ -183,37 +156,17 @@ const questions = [
 ];
 
 const results = {
-  A: {
-    label: "Impact",
-    colour: "#ff0069",
-    url: "https://jennijohnson.co.uk/quiz-sp-impact",
-  },
-  B: {
-    label: "Growth",
-    colour: "#115e84",
-    url: "https://jennijohnson.co.uk/quiz-sp-growth",
-  },
-  C: {
-    label: "Balance",
-    colour: "#9d125e",
-    url: "https://jennijohnson.co.uk/quiz-sp-balance",
-  },
-  D: {
-    label: "Transformation",
-    colour: "#000000",
-    url: "https://jennijohnson.co.uk/quiz-sp-transformation",
-  },
+  A: { label: "Impact", colour: "#ff0069", url: "https://jennijohnson.co.uk/quiz-sp-impact" },
+  B: { label: "Growth", colour: "#115e84", url: "https://jennijohnson.co.uk/quiz-sp-growth" },
+  C: { label: "Balance", colour: "#9d125e", url: "https://jennijohnson.co.uk/quiz-sp-balance" },
+  D: { label: "Transformation", colour: "#000000", url: "https://jennijohnson.co.uk/quiz-sp-transformation" },
 };
 
-// --- STYLE CONSTANTS ---
-const sqsGreen = "#b9e085";
-const sqsGreenHover = "#a4cc73";
-const borderColor = "#3a3a3a";
 const btnGreen = {
-  background: sqsGreen,
+  background: "#b9e085",
   color: "#000",
   padding: "8px 18px",
-  border: `2px solid ${borderColor}`,
+  border: "2px solid #3a3a3a",
   borderRadius: 30,
   cursor: "pointer",
   fontSize: 16,
@@ -224,7 +177,7 @@ const btnWhite = {
   background: "#fff",
   color: "#000",
   padding: "14px 22px",
-  border: `2px solid ${borderColor}`,
+  border: "2px solid #3a3a3a",
   borderRadius: 30,
   cursor: "pointer",
   fontSize: 18,
@@ -312,91 +265,87 @@ export default function App() {
     }
   };
 
-  if (phase === "init")
-    return (
-      <div
-        style={{
-          fontFamily: "Poppins, sans-serif",
-          textAlign: "center",
-          padding: 40,
-        }}
-      >
-        Loading...
-      </div>
-    );
-
-  if (phase === "confirmBanner")
-    return (
-      <div
-        style={{
-          fontFamily: "Poppins, sans-serif",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
-      >
-        <div
-          style={{
-            padding: 24,
-            borderRadius: 12,
-            background: "#fff",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-          }}
-        >
-          <h3>Thanks for confirming — here’s your quiz</h3>
-        </div>
-      </div>
-    );
-
-  // --- Updated waiting phase ---
   if (phase === "waiting")
     return (
-      <div
-        style={{
-          fontFamily: "Poppins, sans-serif",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          background: "transparent",
-        }}
-      >
-        <div
-          style={{
-            background: "#ffffff",
-            borderRadius: 16,
-            padding: "32px 48px",
-            textAlign: "center",
-            maxWidth: 720,
-            boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
-          }}
-        >
-          <h3
-            style={{
-              color: "#028c8f",
-              fontSize: 22,
-              fontWeight: 700,
-              marginBottom: 16,
-            }}
-          >
-            Please check your inbox to confirm your email address
-          </h3>
-          <p
-            style={{
-              fontSize: 16,
-              color: "#333",
-              lineHeight: 1.6,
-            }}
-          >
-            Your confirmation has been sent to{" "}
-            <b style={{ color: "#115e84" }}>{email}</b>. Click the link in the
-            email to start the quiz.
+      <div style={{ fontFamily: "Poppins, sans-serif", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        <div style={{ background: "#fff", borderRadius: 16, padding: "32px 48px", textAlign: "center", maxWidth: 720, boxShadow: "0 8px 30px rgba(0,0,0,0.08)" }}>
+          <h3 style={{ color: "#028c8f", fontSize: 22, fontWeight: 700, marginBottom: 16 }}>Please check your inbox to confirm your email address</h3>
+          <p style={{ fontSize: 16, color: "#333", lineHeight: 1.6 }}>
+            Your confirmation has been sent to <b style={{ color: "#115e84" }}>{email}</b>. Click the link in the email to start the quiz.
           </p>
         </div>
       </div>
     );
 
-  // --- Form, Quiz, and Result phases continue unchanged below ---
-  // (same as last working version you tested)
+  if (phase === "form")
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "40px 0", fontFamily: "Poppins, sans-serif" }}>
+        <div style={{ width: "100%", maxWidth: 600, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, background: "#fff" }}>
+          <img src="/quiz-cover.png" alt="Success Path Quiz" style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 8, marginBottom: 16 }} />
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#028c8f", marginBottom: 8 }}>Discover Your Success Path</h2>
+          <p style={{ fontSize: 15, marginBottom: 16, lineHeight: 1.5 }}>
+            <b>Your energy already knows how to move.</b> This quiz helps you hear it so you can step into your business flow.
+          </p>
+          <div style={{ display: "grid", gap: 12 }}>
+            <label>Name</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc", fontFamily: "Poppins, sans-serif" }} />
+            <label>Email</label>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc", fontFamily: "Poppins, sans-serif" }} />
+            <label style={{ fontSize: 14 }}>
+              <input type="checkbox" checked={gdpr} onChange={(e) => setGdpr(e.target.checked)} style={{ marginRight: 8 }} /> By entering your email, you agree to get your quiz results as well as insights for your next steps.
+            </label>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+              <button style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }} disabled={!isFormValid} onClick={handleStartClick}>
+                Start Quiz →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+  if (phase === "quiz") {
+    const q = questions[step - 1];
+    const progress = Math.round(((step - 1) / questions.length) * 100);
+    return (
+      <div style={{ display: "grid", placeItems: "center", background: "#fff", fontFamily: "Poppins, sans-serif" }}>
+        <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", background: "#fff" }}>
+          <div style={{ height: 6, background: "#eee", borderRadius: 999, marginBottom: 12 }}>
+            <div style={{ width: `${progress}%`, height: "100%", background: "#028c8f", borderRadius: 999, transition: "width 200ms ease" }} />
+          </div>
+          <div style={{ fontSize: 12, color: "#666", marginBottom: 8 }}>Question {step} of {questions.length}</div>
+          <AnimatePresence mode="wait">
+            <motion.div key={step} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.25 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>{q.text}</h2>
+              <div style={{ display: "grid", gap: 10 }}>
+                {q.options.map((o, i) => (
+                  <button key={i} onClick={() => handleAnswer(o.letter)} style={btnWhite}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#b9e085")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}>
+                    {o.text}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "result" && resultData)
+    return (
+      <div style={{ display: "grid", placeItems: "center", background: "#fff", fontFamily: "Poppins, sans-serif" }}>
+        <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", textAlign: "center", background: "#fff" }}>
+          <h2 style={{ fontSize: 26, fontWeight: 700, marginBottom: 16, color: resultData.colour }}>
+            Your Success Path is… {resultData.label}
+          </h2>
+          <button style={btnGreen} onClick={() => (window.top.location.href = resultData.url)}>
+            See Your Full Result →
+          </button>
+        </div>
+      </div>
+    );
+
+  return null;
 }
