@@ -32,3 +32,10 @@ yarn-error.log*
 
 # local environment configs
 /config/*.json
+
+# Block backups and archives  
+*.zip  
+*.tar.gz  
+*.tgz  
+*_snapshot.zip  
+*_archive.zip
