@@ -84,7 +84,10 @@ const questions = [
       { text: "A. Leading with my presence and purpose", letter: "A" },
       { text: "B. Growing my business with clarity and confidence", letter: "B" },
       { text: "C. Realigning my vision with my values and needs", letter: "C" },
-      { text: "D. Reimagining what success can look like for me", letter: "D" },
+      {
+        text: "D. Reimagining what success can look like for me",
+        letter: "D",
+      },
     ],
   },
   {
@@ -162,6 +165,7 @@ const results = {
   D: { label: "Transformation", colour: "#000000", url: "https://jennijohnson.co.uk/quiz-sp-transformation" },
 };
 
+// --- STYLES ---
 const btnGreen = {
   background: "#b9e085",
   color: "#000",
@@ -203,25 +207,10 @@ export default function App() {
     ensurePoppins();
     const params = new URLSearchParams(window.location.search);
     if (params.get("confirmed") === "true" || params.get("start") === "1") {
-      setPhase("confirmBanner");
-      setTimeout(() => setPhase("quiz"), 1500);
+      setPhase("thanks");
+      setTimeout(() => setPhase("quiz"), 2000);
     } else setPhase("form");
   }, []);
-
-  useEffect(() => {
-    const postHeight = () => {
-      try {
-        window.parent.postMessage(
-          { type: "resize-iframe", height: document.body.scrollHeight },
-          "*"
-        );
-      } catch {}
-    };
-    postHeight();
-    const ro = new ResizeObserver(postHeight);
-    ro.observe(document.body);
-    return () => ro.disconnect();
-  }, [phase, step]);
 
   async function handleStartClick() {
     if (!isFormValid) return;
@@ -274,6 +263,29 @@ export default function App() {
             Your confirmation has been sent to <b style={{ color: "#115e84" }}>{email}</b>. Click the link in the email to start the quiz.
           </p>
         </div>
+      </div>
+    );
+
+  if (phase === "thanks")
+    return (
+      <div style={{ fontFamily: "Poppins, sans-serif", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6 }}
+          style={{
+            background: "#ffffff",
+            borderRadius: 16,
+            padding: "40px 60px",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
+            textAlign: "center",
+          }}
+        >
+          <h3 style={{ color: "#028c8f", fontWeight: 700, fontSize: 22 }}>
+            Thanks for confirming — here’s your quiz
+          </h3>
+        </motion.div>
       </div>
     );
 
