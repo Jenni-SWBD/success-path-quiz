@@ -3,15 +3,28 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
-// Load Poppins font dynamically
-function loadPoppinsFont() {
+// --- FONT SETUP ---
+function ensurePoppins() {
+  const preconnect1 = document.createElement("link");
+  preconnect1.rel = "preconnect";
+  preconnect1.href = "https://fonts.googleapis.com";
+  const preconnect2 = document.createElement("link");
+  preconnect2.rel = "preconnect";
+  preconnect2.href = "https://fonts.gstatic.com";
+  preconnect2.crossOrigin = "true";
+  const preload = document.createElement("link");
+  preload.rel = "preload";
+  preload.as = "style";
+  preload.href =
+    "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap";
   const link = document.createElement("link");
+  link.rel = "stylesheet";
   link.href =
     "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap";
-  link.rel = "stylesheet";
-  document.head.appendChild(link);
+  document.head.append(preconnect1, preconnect2, preload, link);
 }
 
+// --- HELPERS ---
 async function tagWithKit(email, result) {
   if (!email || !result) return;
   try {
@@ -39,6 +52,7 @@ async function saveResultToSheet(data) {
   }
 }
 
+// --- QUIZ CONTENT ---
 const questions = [
   { text: "1. What’s been on your mind most in business lately?", options: [
     { text: "A. Being seen and heard more clearly", letter: "A" },
@@ -46,7 +60,66 @@ const questions = [
     { text: "C. Slowing down to reconnect with what matters", letter: "C" },
     { text: "D. Changing direction or letting something go", letter: "D" },
   ]},
-  // ... other questions unchanged ...
+  { text: "2. What's feeling heavy right now?", options: [
+    { text: "A. Holding myself back, stagnating", letter: "A" },
+    { text: "B. The pressure to keep pushing", letter: "B" },
+    { text: "C. Constant juggling and overdoing", letter: "C" },
+    { text: "D. The sense that something’s ending, outdated or uncertain", letter: "D" },
+  ]},
+  { text: "3. Which of these excites you the most right now?", options: [
+    { text: "A. Sharing my voice and message", letter: "A" },
+    { text: "B. Creating new offers and opportunities", letter: "B" },
+    { text: "C. Building a life-business rhythm that fits me", letter: "C" },
+    { text: "D. Exploring a bolder, newer version of my work", letter: "D" },
+  ]},
+  { text: "4. What’s one thing you wish felt easier?", options: [
+    { text: "A. Showing up fully as myself", letter: "A" },
+    { text: "B. Expanding my work in a way that feels aligned", letter: "B" },
+    { text: "C. Managing my energy and time", letter: "C" },
+    { text: "D. Trusting big transitions", letter: "D" },
+  ]},
+  { text: "5. Which describes your current focus best?", options: [
+    { text: "A. Leading with my presence and purpose", letter: "A" },
+    { text: "B. Growing my business with clarity and confidence", letter: "B" },
+    { text: "C. Realigning my vision with my values and needs", letter: "C" },
+    { text: "D. Reimagining what success can look like for me", letter: "D" },
+  ]},
+  { text: "6. What’s calling you forward right now?", options: [
+    { text: "A. Greater visibility and influence", letter: "A" },
+    { text: "B. Sustainable, soul-aligned success", letter: "B" },
+    { text: "C. A return to flow and inner clarity", letter: "C" },
+    { text: "D. A full-soul pivot or transformation", letter: "D" },
+  ]},
+  { text: "7. What tends to derail you?", options: [
+    { text: "A. Fear of being too much or not enough", letter: "A" },
+    { text: "B. Chasing results that drain me", letter: "B" },
+    { text: "C. Ignoring my own needs", letter: "C" },
+    { text: "D. Staying stuck in the old version of me", letter: "D" },
+  ]},
+  { text: "8. How do you usually reset when things feel off?", options: [
+    { text: "A. Reconnect with my why and speak it out loud", letter: "A" },
+    { text: "B. Rework my plans or get clearer strategy", letter: "B" },
+    { text: "C. Take a step back and restore my energy", letter: "C" },
+    { text: "D. Dive into deep reflection or journalling", letter: "D" },
+  ]},
+  { text: "9. What do you most want in this next phase?", options: [
+    { text: "A. To feel seen, trusted and in my power", letter: "A" },
+    { text: "B. To grow in a way that lasts", letter: "B" },
+    { text: "C. To feel spacious, present and aligned", letter: "C" },
+    { text: "D. To grow into the next better version of myself", letter: "D" },
+  ]},
+  { text: "10. When things feel uncertain, what’s your go-to response pattern?", options: [
+    { text: "A. I step into control mode, clarity comes when I take the lead", letter: "A" },
+    { text: "B. I get restless or try to fix it by doing more", letter: "B" },
+    { text: "C. I shut down or quietly check out to protect my energy", letter: "C" },
+    { text: "D. I spiral a little... old fears flare up and I question everything", letter: "D" },
+  ]},
+  { text: "11. Which belief are you most ready to let go of even if part of you still clings to it?", options: [
+    { text: "A. That I have to tone myself down to be accepted", letter: "A" },
+    { text: "B. That I need to earn rest by proving my worth", letter: "B" },
+    { text: "C. That I’m only valuable when I’m useful to others", letter: "C" },
+    { text: "D. That I need to have it all figured out before I take the next step", letter: "D" },
+  ]},
 ];
 
 const results = {
@@ -56,6 +129,7 @@ const results = {
   D: { label: "Transformation", colour: "#000000", url: "https://jennijohnson.co.uk/quiz-sp-transformation" },
 };
 
+// --- STYLE CONSTANTS ---
 const sqsGreen = "#b9e085";
 const sqsGreenHover = "#a4cc73";
 const borderColor = "#3a3a3a";
@@ -83,30 +157,30 @@ const btnWhite = {
   fontFamily: "Poppins, sans-serif",
 };
 
+// --- MAIN APP ---
 export default function App() {
-  const [phase, setPhase] = useState("init"); // init | confirmBanner | form | quiz | waiting | result
+  const [phase, setPhase] = useState("init");
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gdpr, setGdpr] = useState(false);
-  const [resendMessage, setResendMessage] = useState("");
   const [answers, setAnswers] = useState([]);
   const [resultData, setResultData] = useState(null);
 
   const validateEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   const isFormValid = name.trim().length > 1 && validateEmail(email) && gdpr;
 
+  // Load font + decide starting view
   useEffect(() => {
-    loadPoppinsFont();
+    ensurePoppins();
     const params = new URLSearchParams(window.location.search);
     if (params.get("confirmed") === "true" || params.get("start") === "1") {
       setPhase("confirmBanner");
       setTimeout(() => setPhase("quiz"), 1500);
-    } else {
-      setPhase("form");
-    }
+    } else setPhase("form");
   }, []);
 
+  // Resize observer for Squarespace embed
   useEffect(() => {
     const postHeight = () => {
       try {
@@ -129,13 +203,9 @@ export default function App() {
         body: JSON.stringify({ email, first_name: name }),
       });
       const data = await resp.json();
-      if (data.ok) {
-        setPhase("waiting");
-      } else {
-        setResendMessage(data.message || "Could not start confirmation. Try again later.");
-      }
+      if (!data.ok) setPhase("form");
     } catch {
-      setResendMessage("Could not start confirmation. Try again later.");
+      setPhase("form");
     }
   }
 
@@ -143,7 +213,7 @@ export default function App() {
     const next = [...answers];
     next[step - 1] = l;
     setAnswers(next);
-    if (step < 11) setStep(step + 1);
+    if (step < questions.length) setStep(step + 1);
     else {
       const tally = { A: 0, B: 0, C: 0, D: 0 };
       next.forEach((a) => (tally[a] = (tally[a] || 0) + 1));
@@ -163,53 +233,63 @@ export default function App() {
     }
   };
 
-  if (phase === "init") {
+  if (phase === "init")
     return <div style={{ fontFamily: "Poppins, sans-serif", textAlign: "center", padding: 40 }}>Loading...</div>;
-  }
 
-  if (phase === "confirmBanner") {
+  if (phase === "confirmBanner")
     return (
       <div style={{ fontFamily: "Poppins, sans-serif", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
         <div style={{ padding: 24, borderRadius: 12, background: "#fff", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
-          <h3>Thanks for confirming — enjoy the quiz</h3>
+          <h3>Thanks for confirming — here’s your quiz</h3>
         </div>
       </div>
     );
-  }
 
-  if (phase === "waiting") {
+  if (phase === "waiting")
     return (
       <div style={{ fontFamily: "Poppins, sans-serif", textAlign: "center", padding: 40 }}>
         <h3>Please check your inbox to confirm your email address</h3>
         <p>Your confirmation has been sent to <b>{email}</b>. Click the link in the email to start the quiz.</p>
       </div>
     );
-  }
 
-  if (phase === "form") {
+  if (phase === "form")
     return (
       <div style={{ fontFamily: "Poppins, sans-serif", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "40px 0" }}>
         <div style={{ width: "100%", maxWidth: 600, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, background: "#fff" }}>
+          <img
+            src={`${process.env.PUBLIC_URL || ""}/quiz-cover.png`}
+            alt="Success Path Quiz"
+            style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 8, marginBottom: 16, display: "block" }}
+          />
           <h2 style={{ fontSize: 22, fontWeight: 700, color: "#028c8f", marginBottom: 8 }}>Discover Your Success Path</h2>
-          <div style={{ display: "grid", gap: 12 }}>
-            <label>Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc" }} />
-            <label>Email</label>
-            <input value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc" }} />
-            <label style={{ fontSize: 14 }}>
-              <input type="checkbox" checked={gdpr} onChange={(e) => setGdpr(e.target.checked)} style={{ marginRight: 8 }} /> By entering your email, you agree to receive your quiz results and insights for your next steps.
-            </label>
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
-              <button style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }} disabled={!isFormValid} onClick={handleStartClick}>
-                Start Quiz →
-              </button>
-            </div>
+          <p style={{ fontSize: 15, marginBottom: 16, lineHeight: 1.5 }}>
+            <b>Your energy already knows how to move.</b> This quiz helps you hear it so you can step into your business flow.
+          </p>
+          <label>Name</label>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc", fontFamily: "Poppins, sans-serif" }}
+          />
+          <label>Email</label>
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc", fontFamily: "Poppins, sans-serif" }}
+          />
+          <label style={{ fontSize: 14 }}>
+            <input type="checkbox" checked={gdpr} onChange={(e) => setGdpr(e.target.checked)} style={{ marginRight: 8 }} /> 
+            By entering your email, you agree to receive your quiz results and next-step insights.
+          </label>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+            <button style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }} disabled={!isFormValid} onClick={handleStartClick}>
+              Start Quiz →
+            </button>
           </div>
-          {resendMessage && <p style={{ marginTop: 10, color: "#028c8f" }}>{resendMessage}</p>}
         </div>
       </div>
     );
-  }
 
   if (phase === "quiz") {
     const q = questions[step - 1];
@@ -246,7 +326,7 @@ export default function App() {
     );
   }
 
-  if (phase === "result" && resultData) {
+  if (phase === "result" && resultData)
     return (
       <div style={{ fontFamily: "Poppins, sans-serif", display: "grid", placeItems: "center", background: "#fff" }}>
         <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", textAlign: "center", background: "#fff" }}>
@@ -255,7 +335,6 @@ export default function App() {
         </div>
       </div>
     );
-  }
 
   return null;
 }
