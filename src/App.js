@@ -386,5 +386,48 @@ export default function App() {
   }
 
   if (phase === "result" && resultData)
-    return (
-      <div style={{ fontFamily:
+  return (
+    <div
+      style={{
+        fontFamily: "Poppins, sans-serif",
+        display: "grid",
+        placeItems: "center",
+        background: "#fff",
+        minHeight: "100vh",
+        padding: "60px 16px",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 720,
+          borderRadius: 16,
+          boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+          padding: 32,
+          textAlign: "center",
+          background: "#fff",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: 26,
+            fontWeight: 700,
+            marginBottom: 16,
+            color: resultData.colour,
+          }}
+        >
+          Your Success Path is… {resultData.label}
+        </h2>
+        <button
+          style={btnGreen}
+          onClick={() => (window.top.location.href = resultData.url)}
+        >
+          See Your Full Result →
+        </button>
+      </div>
+    </div>
+  );
+
+return null;
+}
+
