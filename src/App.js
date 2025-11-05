@@ -3,6 +3,14 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
+// Load Poppins font dynamically
+function loadPoppinsFont() {
+  const link = document.createElement("link");
+  link.href = "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap";
+  link.rel = "stylesheet";
+  document.head.appendChild(link);
+}
+
 async function tagWithKit(email, result) {
   if (!email || !result) return;
   try {
@@ -118,6 +126,7 @@ const btnGreen = {
   cursor: "pointer",
   fontSize: 16,
   fontWeight: 700,
+  fontFamily: "Poppins, sans-serif",
 };
 const btnWhite = {
   background: "#fff",
@@ -129,6 +138,7 @@ const btnWhite = {
   fontSize: 18,
   fontWeight: 400,
   textAlign: "left",
+  fontFamily: "Poppins, sans-serif",
 };
 
 export default function App() {
@@ -136,6 +146,8 @@ export default function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gdpr, setGdpr] = useState(false);
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
   const [confirmedBanner, setConfirmedBanner] = useState(false);
@@ -144,6 +156,7 @@ export default function App() {
   const isFormValid = name.trim().length > 1 && validateEmail(email) && gdpr;
 
   useEffect(() => {
+    loadPoppinsFont();
     const postHeight = () => {
       try {
         window.parent.postMessage({ type: "resize-iframe", height: document.body.scrollHeight }, "*");
@@ -161,17 +174,46 @@ export default function App() {
       setStep(1);
       setConfirmedBanner(true);
       setTimeout(() => setConfirmedBanner(false), 2500);
-    } else {
-      setStep(0); // ensure entry screen always shows
     }
   }, []);
 
-  const handleStartClick = async () => {
+  async function handleStartClick() {
     if (!isFormValid) return;
+
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
-    setStep(1);
-  };
+
+    try {
+      const resp = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, first_name: name }),
+      });
+
+      const data = await resp.json();
+      if (data.ok) {
+        setAwaitingConfirmation(true);
+      } else {
+        setResendMessage(data.message || "Could not start confirmation. Try again later.");
+      }
+    } catch {
+      setResendMessage("Could not start confirmation. Try again later.");
+    }
+  }
+
+  async function handleResendClick() {
+    try {
+      await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, first_name: name }),
+      });
+      setResendMessage("Resent. Please recheck your inbox.");
+      setTimeout(() => setResendMessage(""), 5000);
+    } catch {
+      setResendMessage("Resend failed. Please try again later.");
+    }
+  }
 
   const handleAnswer = (l) => {
     const next = [...answers];
@@ -181,9 +223,22 @@ export default function App() {
     else setSubmitted(true);
   };
 
+  if (awaitingConfirmation)
+    return (
+      <div style={{ fontFamily: "Poppins, sans-serif", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "40px 0" }}>
+        <div style={{ maxWidth: 520, borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.08)", padding: 28, background: "#fff", textAlign: "center" }}>
+          <h3>Please check your inbox to confirm your email address</h3>
+          <p>Your confirmation has been sent to <b>{email}</b>. Click the link in the email to start the quiz.</p>
+          <p style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>If you don’t see it, check spam or click resend</p>
+          <button style={btnGreen} onClick={handleResendClick}>Resend confirmation</button>
+          {resendMessage && <p style={{ marginTop: 10, color: "#028c8f", transition: "opacity 0.3s" }}>{resendMessage}</p>}
+        </div>
+      </div>
+    );
+
   if (step === 0)
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "40px 0" }}>
+      <div style={{ fontFamily: "Poppins, sans-serif", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "40px 0" }}>
         <div style={{ width: "100%", maxWidth: 600, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, background: "#fff" }}>
           <img src="/quiz-cover.png" alt="Success Path Quiz" style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 8, marginBottom: 16 }} />
           <h2 style={{ fontSize: 22, fontWeight: 700, color: "#028c8f", marginBottom: 8 }}>Discover Your Success Path</h2>
@@ -225,7 +280,7 @@ export default function App() {
     tagWithKit(email, res.label);
 
     return (
-      <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
+      <div style={{ fontFamily: "Poppins, sans-serif", display: "grid", placeItems: "center", background: "#fff" }}>
         <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", textAlign: "center", background: "#fff" }}>
           <h2 style={{ fontSize: 26, fontWeight: 700, marginBottom: 16, color: res.colour }}>Your Success Path is… {res.label}</h2>
           <button style={btnGreen} onClick={() => (window.top.location.href = res.url)}>See Your Full Result →</button>
@@ -238,7 +293,7 @@ export default function App() {
   const progress = Math.round(((step - 1) / questions.length) * 100);
 
   return (
-    <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
+    <div style={{ fontFamily: "Poppins, sans-serif", display: "grid", placeItems: "center", background: "#fff" }}>
       <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", background: "#fff" }}>
         {confirmedBanner && <div style={{ background: "#b9e08520", padding: 12, borderRadius: 8, marginBottom: 12, textAlign: "center" }}>Thanks for confirming — here’s your quiz</div>}
         <div style={{ marginBottom: 12 }}>
@@ -248,11 +303,25 @@ export default function App() {
           <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>Question {step} of {questions.length}</div>
         </div>
         <AnimatePresence mode="wait">
-          <motion.div key={step} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.25 }}>
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.25 }}
+          >
             <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>{q.text}</h2>
             <div style={{ display: "grid", gap: 10 }}>
               {q.options.map((o, i) => (
-                <button key={i} onClick={() => handleAnswer(o.letter)} style={btnWhite} onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)} onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}>{o.text}</button>
+                <button
+                  key={i}
+                  onClick={() => handleAnswer(o.letter)}
+                  style={btnWhite}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+                >
+                  {o.text}
+                </button>
               ))}
             </div>
           </motion.div>
