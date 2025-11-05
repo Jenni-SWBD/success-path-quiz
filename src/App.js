@@ -6,7 +6,8 @@ import "./App.css";
 // Load Poppins font dynamically
 function loadPoppinsFont() {
   const link = document.createElement("link");
-  link.href = "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap";
+  link.href =
+    "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap";
   link.rel = "stylesheet";
   document.head.appendChild(link);
 }
@@ -168,12 +169,15 @@ export default function App() {
     return () => ro.disconnect();
   }, [step]);
 
+  // Smooth confirmation banner timing (Option 2)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("confirmed") === "true" || params.get("start") === "1") {
-      setStep(1);
       setConfirmedBanner(true);
-      setTimeout(() => setConfirmedBanner(false), 2500);
+      setTimeout(() => {
+        setStep(1);
+        setConfirmedBanner(false);
+      }, 1500); // short delay for smoother transition
     }
   }, []);
 
@@ -295,12 +299,26 @@ export default function App() {
   return (
     <div style={{ fontFamily: "Poppins, sans-serif", display: "grid", placeItems: "center", background: "#fff" }}>
       <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", background: "#fff" }}>
-        {confirmedBanner && <div style={{ background: "#b9e08520", padding: 12, borderRadius: 8, marginBottom: 12, textAlign: "center" }}>Thanks for confirming — here’s your quiz</div>}
+        {confirmedBanner && (
+          <div style={{ background: "#b9e08520", padding: 12, borderRadius: 8, marginBottom: 12, textAlign: "center" }}>
+            Thanks for confirming — here’s your quiz
+          </div>
+        )}
         <div style={{ marginBottom: 12 }}>
           <div style={{ height: 6, background: "#eee", borderRadius: 999 }}>
-            <div style={{ width: `${progress}%`, height: "100%", background: "#028c8f", borderRadius: 999, transition: "width 200ms ease" }} />
+            <div
+              style={{
+                width: `${progress}%`,
+                height: "100%",
+                background: "#028c8f",
+                borderRadius: 999,
+                transition: "width 200ms ease",
+              }}
+            />
           </div>
-          <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>Question {step} of {questions.length}</div>
+          <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>
+            Question {step} of {questions.length}
+          </div>
         </div>
         <AnimatePresence mode="wait">
           <motion.div
