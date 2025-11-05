@@ -136,8 +136,6 @@ export default function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gdpr, setGdpr] = useState(false);
-  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
-  const [resendMessage, setResendMessage] = useState("");
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
   const [confirmedBanner, setConfirmedBanner] = useState(false);
@@ -163,29 +161,17 @@ export default function App() {
       setStep(1);
       setConfirmedBanner(true);
       setTimeout(() => setConfirmedBanner(false), 2500);
+    } else {
+      setStep(0); // ensure entry screen always shows
     }
   }, []);
 
-  async function handleStartClick() {
+  const handleStartClick = async () => {
     if (!isFormValid) return;
-
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
-
-    try {
-      const resp = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, first_name: name }),
-      });
-
-      const data = await resp.json();
-      if (data.ok) setAwaitingConfirmation(true);
-      else setResendMessage(data.message || "Could not start confirmation. Try again later.");
-    } catch {
-      setResendMessage("Could not start confirmation. Try again later.");
-    }
-  }
+    setStep(1);
+  };
 
   const handleAnswer = (l) => {
     const next = [...answers];
@@ -194,6 +180,33 @@ export default function App() {
     if (step < questions.length) setStep(step + 1);
     else setSubmitted(true);
   };
+
+  if (step === 0)
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "40px 0" }}>
+        <div style={{ width: "100%", maxWidth: 600, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, background: "#fff" }}>
+          <img src="/quiz-cover.png" alt="Success Path Quiz" style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 8, marginBottom: 16 }} />
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: "#028c8f", marginBottom: 8 }}>Discover Your Success Path</h2>
+          <p style={{ fontSize: 15, marginBottom: 16, lineHeight: 1.5 }}>
+            <b>Your energy already knows how to move.</b> This quiz helps you hear it so you can step into your business flow.
+          </p>
+          <div style={{ display: "grid", gap: 12 }}>
+            <label>Name</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc" }} />
+            <label>Email</label>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc" }} />
+            <label style={{ fontSize: 14 }}>
+              <input type="checkbox" checked={gdpr} onChange={(e) => setGdpr(e.target.checked)} style={{ marginRight: 8 }} /> By entering your email, you agree to get your quiz results as well as insights for your next steps.
+            </label>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+              <button style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }} disabled={!isFormValid} onClick={handleStartClick}>
+                Start Quiz →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
 
   if (submitted) {
     const tally = { A: 0, B: 0, C: 0, D: 0 };
@@ -208,8 +221,6 @@ export default function App() {
       successPath: res.label,
       dateISO: new Date().toISOString(),
     };
-
-    // save to Google Sheet + tag in KIT
     saveResultToSheet(data);
     tagWithKit(email, res.label);
 
