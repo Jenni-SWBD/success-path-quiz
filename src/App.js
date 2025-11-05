@@ -350,39 +350,52 @@ export default function App() {
       </div>
     );
 
-  if (phase === "quiz") {
-    const q = questions[step - 1];
-    const progress = Math.round(((step - 1) / questions.length) * 100);
-    return (
-      <div style={{ fontFamily: "Poppins, sans-serif", display: "grid", placeItems: "center", background: "#fff" }}>
-        <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", background: "#fff" }}>
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ height: 6, background: "#eee", borderRadius: 999 }}>
-              <div style={{ width: `${progress}%`, height: "100%", background: "#028c8f", borderRadius: 999, transition: "width 200ms ease" }} />
-            </div>
-            <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>Question {step} of {questions.length}</div>
-          </div>
-          <AnimatePresence mode="wait">
-            <motion.div key={step} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.25 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>{q.text}</h2>
-              <div style={{ display: "grid", gap: 10 }}>
-                {q.options.map((o, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleAnswer(o.letter)}
-                    style={btnWhite}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
-                  >
-                    {o.text}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+  if (phase === "waiting")
+  return (
+    <div
+      style={{
+        fontFamily: "Poppins, sans-serif",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        background: "transparent",
+      }}
+    >
+      <div
+        style={{
+          background: "#ffffff",
+          borderRadius: 16,
+          padding: "32px 48px",
+          textAlign: "center",
+          maxWidth: 720,
+          boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
+        }}
+      >
+        <h3
+          style={{
+            color: "#028c8f",
+            fontSize: 22,
+            fontWeight: 700,
+            marginBottom: 16,
+          }}
+        >
+          Please check your inbox to confirm your email address
+        </h3>
+        <p
+          style={{
+            fontSize: 16,
+            color: "#333",
+            lineHeight: 1.6,
+          }}
+        >
+          Your confirmation has been sent to{" "}
+          <b style={{ color: "#115e84" }}>{email}</b>. Click the link in the
+          email to start the quiz.
+        </p>
       </div>
-    );
+    </div>
+  );
   }
 
   if (phase === "result" && resultData)
