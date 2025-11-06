@@ -11,9 +11,7 @@ async function tagWithKit(email, result) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, result }),
     });
-  } catch (err) {
-    console.error("tagWithKit error:", err);
-  }
+  } catch {}
 }
 
 const questions = [
@@ -108,6 +106,7 @@ export default function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [gdpr, setGdpr] = useState(false);
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
@@ -144,53 +143,39 @@ export default function App() {
     localStorage.setItem("quizEmail", email);
 
     try {
-      console.log("Posting to /api/saveResult...");
-      const resp = await fetch("/api/saveResult", {
+      const resp = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ email, first_name: name }),
       });
 
       const data = await resp.json();
-      console.log("Response from /api/saveResult:", data);
       if (data.ok) {
-        setStep(1);
+        setAwaitingConfirmation(true);
       } else {
-        setResendMessage(data.message || "Could not start quiz. Try again later.");
+        setResendMessage(data.message || "Could not start confirmation. Try again later.");
       }
-    } catch (err) {
-      console.error("Error starting quiz:", err);
-      setResendMessage("Could not start quiz. Try again later.");
+    } catch {
+      setResendMessage("Could not start confirmation. Try again later.");
     }
   }
 
-  async function handleResendClick() {
-    try {
-      const resp = await fetch("/api/saveResult", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, resend: true }),
-      });
-      const data = await resp.json();
-      if (data.ok) {
-        setResendMessage("Resent. Please recheck your inbox.");
-        setTimeout(() => setResendMessage(""), 5000);
-      } else {
-        setResendMessage("Resend failed. Please try again later.");
-      }
-    } catch (err) {
-      console.error("Error resending:", err);
-      setResendMessage("Resend failed. Please try again later.");
-    }
-  }
-
-  const handleAnswer = (l) => {
+  const handleAnswer = (letter) => {
     const next = [...answers];
-    next[step - 1] = l;
+    next[step - 1] = letter;
     setAnswers(next);
     if (step < questions.length) setStep(step + 1);
     else setSubmitted(true);
   };
+
+  if (awaitingConfirmation)
+    return (
+      <div style={{ fontFamily: "Poppins", textAlign: "center", padding: "40px 0" }}>
+        <h3>Please check your inbox to confirm your email address</h3>
+        <p>Your confirmation has been sent to <b>{email}</b>.</p>
+        <p style={{ fontSize: 13, color: "#666" }}>If you don’t see it, check spam</p>
+      </div>
+    );
 
   if (step === 0)
     return (
@@ -211,7 +196,6 @@ export default function App() {
             <div style={{ textAlign: "center" }}>
               <button style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6 }} disabled={!isFormValid} onClick={handleStartClick}>Start Quiz →</button>
             </div>
-            {resendMessage && <p style={{ color: "#028c8f", marginTop: 10 }}>{resendMessage}</p>}
           </div>
         </div>
       </div>
@@ -223,6 +207,21 @@ export default function App() {
     const winner = Object.keys(tally).reduce((a, b) => (tally[a] > tally[b] ? a : b));
     const res = results[winner];
     tagWithKit(email, res.label);
+
+    // ✅ Send full data to backend
+    fetch("/api/saveResult", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        answers,
+        successPath: res.label,
+        gdpr,
+        dateISO: new Date().toISOString(),
+      }),
+    }).catch((err) => console.error("saveResult error", err));
+
     return (
       <div style={{ textAlign: "center", fontFamily: "Poppins", padding: "40px 0" }}>
         <h2 style={{ color: res.colour }}>Your Success Path is… {res.label}</h2>
