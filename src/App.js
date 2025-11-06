@@ -206,26 +206,42 @@ export default function App() {
     answers.forEach((a) => tally[a]++);
     const winner = Object.keys(tally).reduce((a, b) => (tally[a] > tally[b] ? a : b));
     const res = results[winner];
-    tagWithKit(email, res.label);
 
-    // ✅ Send full data to backend
-    fetch("/api/saveResult", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        email,
-        answers,
-        successPath: res.label,
-        gdpr,
-        dateISO: new Date().toISOString(),
-      }),
-    }).catch((err) => console.error("saveResult error", err));
+    async function handleFinish() {
+      try {
+        const payload = {
+          name,
+          email,
+          answers,
+          successPath: res.label,
+          gdpr,
+          dateISO: new Date().toISOString(),
+        };
+
+        console.log("Sending quiz results →", payload);
+
+        const response = await fetch("/api/saveResult", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        console.log("saveResult response:", data);
+      } catch (err) {
+        console.error("saveResult error:", err);
+      } finally {
+        tagWithKit(email, res.label);
+        window.top.location.href = res.url;
+      }
+    }
 
     return (
       <div style={{ textAlign: "center", fontFamily: "Poppins", padding: "40px 0" }}>
         <h2 style={{ color: res.colour }}>Your Success Path is… {res.label}</h2>
-        <button style={btnGreen} onClick={() => (window.top.location.href = res.url)}>See Your Full Result →</button>
+        <button style={btnGreen} onClick={handleFinish}>
+          See Your Full Result →
+        </button>
       </div>
     );
   }
