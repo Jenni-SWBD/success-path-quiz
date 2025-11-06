@@ -6,12 +6,9 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "https://jennijohnson.co.uk");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
+  if (req.method === "OPTIONS") return res.status(200).end();
   // --------------------------------------
 
-  // Only accept POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -21,29 +18,19 @@ export default async function handler(req, res) {
 
     const { name, email, answers, successPath, gdpr, dateISO } = req.body;
 
-    // Quick sanity check for required data
-    if (!name || !email || !answers || !successPath) {
+    // Required fields check — only runs when quiz is completed
+    if (!name || !email || !Array.isArray(answers) || answers.length === 0 || !successPath) {
       console.error("❌ Missing required fields:", { name, email, answers, successPath });
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Validate Google credentials exist
+    // Validate environment variables
     if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY || !process.env.SHEET_ID) {
-      console.error("❌ Missing Google env vars");
-      return res.status(500).json({ error: "Server not configured" });
+      console.error("❌ Missing Google environment variables");
+      return res.status(500).json({ error: "Server not configured correctly" });
     }
 
-    // --- ENV CHECK ---
-    console.log("ENV CHECK:", {
-      GOOGLE_CLIENT_EMAIL: process.env.GOOGLE_CLIENT_EMAIL ? "✔️ present" : "❌ missing",
-      GOOGLE_PRIVATE_KEY: process.env.GOOGLE_PRIVATE_KEY
-        ? `✔️ length ${process.env.GOOGLE_PRIVATE_KEY.length}`
-        : "❌ missing",
-      SHEET_ID: process.env.SHEET_ID ? "✔️ present" : "❌ missing",
-    });
-    // -----------------
-
-    // Authenticate with Google Sheets API
+    // --- Authenticate with Google Sheets API ---
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -54,26 +41,23 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.SHEET_ID;
-    const range = "Responses!A:Q"; // Columns A–Q (17 total fields)
+    const range = "Responses!A:O"; // stops at O (Success Path)
 
     // Build new row
     const row = [
-      dateISO || new Date().toISOString(), // A: Date
+      dateISO || new Date().toISOString(), // A: Timestamp
       name,                                // B: Name
       email,                               // C: Email
       ...(answers || []),                  // D–N: Quiz answers
       successPath,                         // O: Success Path
-      "",                                  // P: Daily Log Date (blank)
-      "",                                  // Q: KIT Tag Date (blank)
     ];
 
-    console.log("📄 Appending row to Google Sheet:", row);
+    console.log("📄 Appending completed quiz row:", row);
 
-    // Timeout wrapper to prevent hanging
-    const timeout = (ms) =>
-      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
+    // Timeout wrapper (8s)
+    const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
 
-    // Append with 8-second safety timeout
+    // Append with 8-second timeout
     await Promise.race([
       sheets.spreadsheets.values.append({
         spreadsheetId,
@@ -84,7 +68,7 @@ export default async function handler(req, res) {
       timeout(8000),
     ]);
 
-    console.log("✅ Row successfully appended");
+    console.log("✅ Row successfully appended to Google Sheet");
     return res.status(200).json({ message: "Saved successfully" });
   } catch (err) {
     console.error("🔥 saveResult error:", err);
