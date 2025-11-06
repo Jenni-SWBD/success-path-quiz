@@ -23,15 +23,25 @@ export default async function handler(req, res) {
 
     // Quick sanity check for required data
     if (!name || !email || !answers || !successPath) {
-      console.error("Missing required fields:", { name, email, answers, successPath });
+      console.error("❌ Missing required fields:", { name, email, answers, successPath });
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     // Validate Google credentials exist
     if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY || !process.env.SHEET_ID) {
-      console.error("Missing Google env vars");
+      console.error("❌ Missing Google env vars");
       return res.status(500).json({ error: "Server not configured" });
     }
+
+    // --- ENV CHECK ---
+    console.log("ENV CHECK:", {
+      GOOGLE_CLIENT_EMAIL: process.env.GOOGLE_CLIENT_EMAIL ? "✔️ present" : "❌ missing",
+      GOOGLE_PRIVATE_KEY: process.env.GOOGLE_PRIVATE_KEY
+        ? `✔️ length ${process.env.GOOGLE_PRIVATE_KEY.length}`
+        : "❌ missing",
+      SHEET_ID: process.env.SHEET_ID ? "✔️ present" : "❌ missing",
+    });
+    // -----------------
 
     // Authenticate with Google Sheets API
     const auth = new google.auth.GoogleAuth({
@@ -57,8 +67,7 @@ export default async function handler(req, res) {
       "",                                  // Q: KIT Tag Date (blank)
     ];
 
-    // Log for visibility
-    console.log("Appending row to Google Sheet:", row);
+    console.log("📄 Appending row to Google Sheet:", row);
 
     // Timeout wrapper to prevent hanging
     const timeout = (ms) =>
@@ -75,10 +84,10 @@ export default async function handler(req, res) {
       timeout(8000),
     ]);
 
-    console.log("Row successfully appended");
+    console.log("✅ Row successfully appended");
     return res.status(200).json({ message: "Saved successfully" });
   } catch (err) {
-    console.error("saveResult error:", err.message);
+    console.error("🔥 saveResult error:", err);
     return res.status(500).json({ error: err.message });
   }
 }
