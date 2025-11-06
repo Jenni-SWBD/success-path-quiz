@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
-// Send KIT tag
 async function tagWithKit(email, result) {
   if (!email || !result) return;
   try {
@@ -136,11 +135,29 @@ export default function App() {
     }
   }, []);
 
+  // Start button with KIT email confirmation
   async function handleStartClick() {
     if (!isFormValid) return;
+
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
-    setStep(1);
+
+    try {
+      const resp = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, first_name: name }),
+      });
+
+      const data = await resp.json();
+      if (data.ok) {
+        alert("Please check your inbox to confirm your email address.");
+      } else {
+        alert("Could not start confirmation. Try again later.");
+      }
+    } catch {
+      alert("Could not start confirmation. Try again later.");
+    }
   }
 
   const handleAnswer = (l) => {
@@ -171,11 +188,13 @@ export default function App() {
               <button
                 style={{
                   ...btnGreen,
+                  background: "#b9e085",
                   opacity: isFormValid ? 1 : 0.6,
-                  background: isFormValid ? "#b9e085" : "#fff",
                 }}
                 disabled={!isFormValid}
                 onClick={handleStartClick}
+                onMouseOver={(e) => (e.currentTarget.style.background = "#a6d674")}
+                onMouseOut={(e) => (e.currentTarget.style.background = "#b9e085")}
               >
                 Start Quiz →
               </button>
@@ -242,7 +261,7 @@ export default function App() {
     <div style={{ fontFamily: "Poppins", background: "#fff" }}>
       {confirmedBanner && (
         <div style={{ background: "#dbedbe", padding: 10, borderRadius: 6, textAlign: "center", marginBottom: 10 }}>
-          Thanks for confirming — here’s your quiz
+          Thanks for confirming your email, enjoy the quiz
         </div>
       )}
       <div style={{ maxWidth: 720, margin: "0 auto", padding: 24, background: "#fff", borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
