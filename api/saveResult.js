@@ -1,4 +1,4 @@
-// /api/saveResult.js
+// api/saveResult.js
 import { google } from "googleapis";
 
 export default async function handler(req, res) {
@@ -41,9 +41,9 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.SHEET_ID;
-    const range = "Responses!A:O"; // ends at O — no P or Q
+    const range = "Responses!A:O"; // ends at O — no legacy columns
 
-    // Build the new row
+    // Build new row
     const row = [
       dateISO || new Date().toISOString(), // A: Date
       name,                                // B: Name
@@ -54,6 +54,7 @@ export default async function handler(req, res) {
 
     console.log("📄 Appending row to Google Sheet:", row);
 
+    // Timeout wrapper
     const timeout = (ms) =>
       new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
 
