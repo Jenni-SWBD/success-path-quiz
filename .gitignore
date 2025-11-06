@@ -56,3 +56,4 @@ yarn-error.log*
 # ==========================================================
 /cleaned-repo/
 .vercel
+src/App_backup.js
