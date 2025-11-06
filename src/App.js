@@ -128,9 +128,11 @@ export default function App() {
     return () => ro.disconnect();
   }, [step]);
 
+  // 🔧 Updated: trigger quiz start on ?start=1 redirect
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("confirmed") === "true" || params.get("start") === "1") {
+    if (params.get("start") === "1") {
+      console.log("Start param detected — beginning quiz");
       setStep(1);
       setConfirmedBanner(true);
       setTimeout(() => setConfirmedBanner(false), 2500);
