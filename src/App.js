@@ -220,7 +220,7 @@ export default function App() {
 
         console.log("Sending quiz results →", payload);
 
-        const response = await fetch("/api/saveResult", {
+        const response = await fetch("https://success-path-quiz.vercel.app/api/saveResult", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
