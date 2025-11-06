@@ -23,7 +23,7 @@ export default function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [answers, setAnswers] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(-1); // start at -1 = waiting for KIT confirmation
+  const [currentQuestion, setCurrentQuestion] = useState(-1); // -1 = waiting for KIT confirmation
   const [quizComplete, setQuizComplete] = useState(false);
   const [successPath, setSuccessPath] = useState("");
   const [message, setMessage] = useState("");
@@ -33,7 +33,7 @@ export default function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("start") === "1") {
-      setCurrentQuestion(0); // start quiz
+      setCurrentQuestion(0);
     }
   }, []);
 
@@ -208,30 +208,41 @@ export default function App() {
         <h2>Discover Your Success Path</h2>
         <p>Your energy already knows how to move. This quiz helps you hear it.</p>
 
-        <form
-          action="https://she-who-builds-different.kit.com/c5d3288b6f"
-          method="post"
-        >
-          <input
-            type="text"
-            name="fields[first_name]"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            name="email_address"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <button type="submit" disabled={!name || !email}>
-            Start Quiz →
-          </button>
-        </form>
+        {/* Full ConvertKit Form Embed */}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: `
+              <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
+              <form action="https://app.kit.com/forms/8731322/subscriptions"
+                class="seva-form formkit-form"
+                method="post"
+                data-sv-form="8731322"
+                data-uid="c5d3288b6f"
+                data-format="inline"
+                data-version="5"
+                data-options="{&quot;settings&quot;:{&quot;after_subscribe&quot;:{&quot;action&quot;:&quot;redirect&quot;,&quot;redirect_url&quot;:&quot;https://jennijohnson.co.uk/quiz-sp?start=1&quot;}}}">
+                <div data-style="full">
+                  <div data-element="column" class="formkit-column">
+                    <div class="formkit-header" data-element="header" style="color:#535353;font-size:28px;font-weight:700;">
+                      <h3>Success Path Quiz Opt-In</h3>
+                    </div>
+                    <div data-element="fields" class="seva-fields formkit-fields">
+                      <div class="formkit-field">
+                        <input class="formkit-input" aria-label="First Name" name="fields[first_name]" required placeholder="First Name" type="text">
+                      </div>
+                      <div class="formkit-field">
+                        <input class="formkit-input" name="email_address" aria-label="Email Address" placeholder="Email Address" required type="email">
+                      </div>
+                      <button data-element="submit" class="formkit-submit" style="color:#353535;background-color:#b9e085;border-radius:26px;font-weight:700;">
+                        <span>Take The Quiz</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            `,
+          }}
+        />
       </div>
     );
 
