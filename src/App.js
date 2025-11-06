@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
-// --- Send KIT Tag ---
+// Send KIT tag
 async function tagWithKit(email, result) {
   if (!email || !result) return;
   try {
@@ -12,9 +12,7 @@ async function tagWithKit(email, result) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, result }),
     });
-  } catch (err) {
-    console.error("tagWithKit error:", err);
-  }
+  } catch {}
 }
 
 const questions = [
@@ -117,6 +115,16 @@ export default function App() {
   const validateEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   const isFormValid = name.trim().length > 1 && validateEmail(email) && gdpr;
 
+  // NEW: restore stored name/email after KIT confirmation redirect
+  useEffect(() => {
+    const storedName = localStorage.getItem("quizName");
+    const storedEmail = localStorage.getItem("quizEmail");
+    if (storedName && storedEmail) {
+      setName(storedName);
+      setEmail(storedEmail);
+    }
+  }, []);
+
   useEffect(() => {
     const postHeight = () => {
       try {
@@ -131,7 +139,7 @@ export default function App() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("start") === "1") {
+    if (params.get("confirmed") === "true" || params.get("start") === "1") {
       setStep(1);
       setConfirmedBanner(true);
       setTimeout(() => setConfirmedBanner(false), 2500);
@@ -142,22 +150,7 @@ export default function App() {
     if (!isFormValid) return;
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
-
-    try {
-      const resp = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, first_name: name }),
-      });
-      const data = await resp.json();
-      if (data.ok) {
-        window.top.location.href = `https://jennijohnson.co.uk/quiz-sp?confirmation=sent&email=${encodeURIComponent(email)}`;
-      } else {
-        alert(data.message || "Could not start confirmation. Try again later.");
-      }
-    } catch {
-      alert("Could not start confirmation. Try again later.");
-    }
+    setStep(1);
   }
 
   const handleAnswer = (l) => {
@@ -167,50 +160,6 @@ export default function App() {
     if (step < questions.length) setStep(step + 1);
     else setSubmitted(true);
   };
-
-  async function handleFinish(res) {
-    try {
-      const payload = {
-        name,
-        email,
-        answers,
-        successPath: res.label,
-        gdpr,
-        dateISO: new Date().toISOString(),
-      };
-
-      console.log("Sending quiz results →", payload);
-
-      const response = await fetch("https://success-path-quiz.vercel.app/api/saveResult", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      console.log("saveResult response:", data);
-      if (!response.ok) throw new Error(data.error || "Save failed");
-      tagWithKit(email, res.label);
-    } catch (err) {
-      console.error("saveResult error:", err);
-      alert("Something went wrong saving your result.");
-    } finally {
-      window.top.location.href = res.url;
-    }
-  }
-
-  if (new URLSearchParams(window.location.search).get("confirmation") === "sent") {
-    const address = new URLSearchParams(window.location.search).get("email") || "";
-    return (
-      <div style={{ textAlign: "center", padding: "80px 20px", fontFamily: "Poppins" }}>
-        <div style={{ background: "#fff", maxWidth: 600, margin: "0 auto", borderRadius: 12, padding: 40, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
-          <h2>Please check your inbox to confirm your email address</h2>
-          <p>Your confirmation has been sent to <b>{address}</b>.</p>
-          <p>If you don’t see it, check spam.</p>
-        </div>
-      </div>
-    );
-  }
 
   if (step === 0)
     return (
@@ -252,6 +201,37 @@ export default function App() {
     const winner = Object.keys(tally).reduce((a, b) => (tally[a] > tally[b] ? a : b));
     const res = results[winner];
 
+    async function handleFinish() {
+      try {
+        const payload = {
+          name,
+          email,
+          answers,
+          successPath: res.label,
+          gdpr,
+          dateISO: new Date().toISOString(),
+        };
+
+        console.log("Sending quiz results →", payload);
+
+        const response = await fetch("https://success-path-quiz.vercel.app/api/saveResult", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        console.log("saveResult response:", data);
+        if (!response.ok) alert("Something went wrong saving your result.");
+      } catch (err) {
+        console.error("saveResult error:", err);
+        alert("Something went wrong saving your result.");
+      } finally {
+        tagWithKit(email, res.label);
+        window.top.location.href = res.url;
+      }
+    }
+
     return (
       <div style={{ textAlign: "center", fontFamily: "Poppins", padding: "40px 0" }}>
         <h2 style={{ color: res.colour }}>Your Success Path is… {res.label}</h2>
@@ -259,7 +239,7 @@ export default function App() {
           style={{ ...btnGreen, borderColor: res.colour }}
           onMouseOver={(e) => (e.currentTarget.style.background = "#b9e085")}
           onMouseOut={(e) => (e.currentTarget.style.background = "#fff")}
-          onClick={() => handleFinish(res)}
+          onClick={handleFinish}
         >
           See Your Full Result →
         </button>
