@@ -1,73 +1,57 @@
-// api/saveResult.js
+// pages/api/saveResult.js
 import { google } from "googleapis";
 
 export default async function handler(req, res) {
-  // --- CORS fix for Squarespace embed ---
-  res.setHeader("Access-Control-Allow-Origin", "https://jennijohnson.co.uk");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") return res.status(200).end();
-  // --------------------------------------
-
-  // Only accept POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    console.log("📩 Incoming quiz submission:", req.body);
-
     const { name, email, answers, successPath, gdpr, dateISO } = req.body;
 
-    // --- Validate incoming data ---
-    if (!name || !email || !Array.isArray(answers) || !successPath) {
-      console.error("❌ Missing required fields:", { name, email, answers, successPath });
+    if (!name || !email || !answers || !successPath) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // --- Validate Google credentials ---
-    const { GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY, SHEET_ID } = process.env;
-    if (!GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY || !SHEET_ID) {
-      console.error("❌ Missing Google environment variables");
-      return res.status(500).json({ error: "Server not configured" });
-    }
-
-    // --- Authenticate with Google Sheets API ---
+    // Authenticate with Google Sheets
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        client_email: GOOGLE_CLIENT_EMAIL,
-        private_key: GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
       },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    const spreadsheetId = SHEET_ID;
-    const range = "Responses!A:O"; // Columns A–O only
+    // Spreadsheet ID + Tab name
+    const spreadsheetId = process.env.SHEET_ID;
+    const range = "Responses!A:Q"; // Covers Date → KIT Tag Date
 
-    // --- Build the new row ---
+    // Build row data (17 values total)
     const row = [
-      dateISO || new Date().toISOString(), // A: Date
-      name,                                // B: Name
-      email,                               // C: Email
-      ...(answers || []),                  // D–N: Quiz answers
-      successPath,                         // O: Success Path
+      dateISO || new Date().toISOString(), // A Date
+      name,                                // B Name
+      email,                               // C Email
+      ...(answers || []),                  // D–N (Q1–Q11)
+      successPath,                         // O Success Path
+      "",                                  // P Daily Log Date
+      ""                                   // Q KIT Tag Date
     ];
 
-    console.log("📝 Appending row to Google Sheet:", row);
-
+    // Append row
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range,
       valueInputOption: "USER_ENTERED",
-      requestBody: { values: [row] },
+      requestBody: {
+        values: [row],
+      },
     });
 
-    console.log("✅ Row successfully appended");
     return res.status(200).json({ message: "Saved successfully" });
   } catch (err) {
-    console.error("🔥 saveResult error:", err.message);
+    console.error("saveResult error:", err);
     return res.status(500).json({ error: err.message });
   }
 }
