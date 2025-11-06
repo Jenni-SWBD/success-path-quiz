@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
+// Send KIT tag
 async function tagWithKit(email, result) {
   if (!email || !result) return;
   try {
@@ -110,6 +111,7 @@ export default function App() {
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
   const [confirmedBanner, setConfirmedBanner] = useState(false);
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
 
   const validateEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   const isFormValid = name.trim().length > 1 && validateEmail(email) && gdpr;
@@ -135,7 +137,6 @@ export default function App() {
     }
   }, []);
 
-  // Start button with KIT email confirmation
   async function handleStartClick() {
     if (!isFormValid) return;
 
@@ -151,7 +152,7 @@ export default function App() {
 
       const data = await resp.json();
       if (data.ok) {
-        alert("Please check your inbox to confirm your email address.");
+        setAwaitingConfirmation(true);
       } else {
         alert("Could not start confirmation. Try again later.");
       }
@@ -159,6 +160,15 @@ export default function App() {
       alert("Could not start confirmation. Try again later.");
     }
   }
+
+  if (awaitingConfirmation)
+    return (
+      <div style={{ fontFamily: "Poppins", textAlign: "center", padding: "40px 0" }}>
+        <h3>Please check your inbox to confirm your email address</h3>
+        <p>Your confirmation has been sent to <b>{email}</b>.</p>
+        <p style={{ fontSize: 13, color: "#666" }}>If you don’t see it, check spam.</p>
+      </div>
+    );
 
   const handleAnswer = (l) => {
     const next = [...answers];
@@ -192,9 +202,9 @@ export default function App() {
                   opacity: isFormValid ? 1 : 0.6,
                 }}
                 disabled={!isFormValid}
-                onClick={handleStartClick}
                 onMouseOver={(e) => (e.currentTarget.style.background = "#a6d674")}
                 onMouseOut={(e) => (e.currentTarget.style.background = "#b9e085")}
+                onClick={handleStartClick}
               >
                 Start Quiz →
               </button>
@@ -261,7 +271,7 @@ export default function App() {
     <div style={{ fontFamily: "Poppins", background: "#fff" }}>
       {confirmedBanner && (
         <div style={{ background: "#dbedbe", padding: 10, borderRadius: 6, textAlign: "center", marginBottom: 10 }}>
-          Thanks for confirming your email, enjoy the quiz
+          Thanks for confirming your email, enjoy the quiz.
         </div>
       )}
       <div style={{ maxWidth: 720, margin: "0 auto", padding: 24, background: "#fff", borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
