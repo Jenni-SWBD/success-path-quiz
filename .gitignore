@@ -55,3 +55,4 @@ yarn-error.log*
 # Misc safety
 # ==========================================================
 /cleaned-repo/
+.vercel
