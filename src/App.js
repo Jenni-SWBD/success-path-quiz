@@ -118,9 +118,27 @@ export default function App() {
   const isFormValid = name.trim().length > 1 && validateEmail(email) && gdpr;
 
   useEffect(() => {
+    const postHeight = () => {
+      try {
+        window.parent.postMessage(
+          { type: "resize-iframe", height: document.body.scrollHeight },
+          "*"
+        );
+      } catch {}
+    };
+    postHeight();
+    const ro = new ResizeObserver(postHeight);
+    ro.observe(document.body);
+    const t = setTimeout(postHeight, 800);
+    return () => {
+      clearTimeout(t);
+      ro.disconnect();
+    };
+  }, [step]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("start") === "1") {
-      console.log("Start param detected — quiz unlocked");
       setStep(1);
       setConfirmedBanner(true);
       setTimeout(() => setConfirmedBanner(false), 2500);
