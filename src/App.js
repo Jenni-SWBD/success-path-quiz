@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 
-// Send KIT tag
+// --- Send KIT Tag ---
 async function tagWithKit(email, result) {
   if (!email || !result) return;
   try {
@@ -120,20 +120,13 @@ export default function App() {
   useEffect(() => {
     const postHeight = () => {
       try {
-        window.parent.postMessage(
-          { type: "resize-iframe", height: document.body.scrollHeight },
-          "*"
-        );
+        window.parent.postMessage({ type: "resize-iframe", height: document.body.scrollHeight }, "*");
       } catch {}
     };
     postHeight();
     const ro = new ResizeObserver(postHeight);
     ro.observe(document.body);
-    const t = setTimeout(postHeight, 800);
-    return () => {
-      clearTimeout(t);
-      ro.disconnect();
-    };
+    return () => ro.disconnect();
   }, [step]);
 
   useEffect(() => {
@@ -156,14 +149,13 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, first_name: name }),
       });
-
       const data = await resp.json();
       if (data.ok) {
-        alert("Please check your inbox to confirm your email.");
+        window.top.location.href = `https://jennijohnson.co.uk/quiz-sp?confirmation=sent&email=${encodeURIComponent(email)}`;
       } else {
         alert(data.message || "Could not start confirmation. Try again later.");
       }
-    } catch (err) {
+    } catch {
       alert("Could not start confirmation. Try again later.");
     }
   }
@@ -197,7 +189,6 @@ export default function App() {
 
       const data = await response.json();
       console.log("saveResult response:", data);
-
       if (!response.ok) throw new Error(data.error || "Save failed");
       tagWithKit(email, res.label);
     } catch (err) {
@@ -206,6 +197,19 @@ export default function App() {
     } finally {
       window.top.location.href = res.url;
     }
+  }
+
+  if (new URLSearchParams(window.location.search).get("confirmation") === "sent") {
+    const address = new URLSearchParams(window.location.search).get("email") || "";
+    return (
+      <div style={{ textAlign: "center", padding: "80px 20px", fontFamily: "Poppins" }}>
+        <div style={{ background: "#fff", maxWidth: 600, margin: "0 auto", borderRadius: 12, padding: 40, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
+          <h2>Please check your inbox to confirm your email address</h2>
+          <p>Your confirmation has been sent to <b>{address}</b>.</p>
+          <p>If you don’t see it, check spam.</p>
+        </div>
+      </div>
+    );
   }
 
   if (step === 0)
