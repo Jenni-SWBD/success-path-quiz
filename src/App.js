@@ -12,7 +12,9 @@ async function tagWithKit(email, result) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, result }),
     });
-  } catch {}
+  } catch (err) {
+    console.error("tagWithKit error:", err);
+  }
 }
 
 const questions = [
@@ -111,28 +113,14 @@ export default function App() {
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
   const [confirmedBanner, setConfirmedBanner] = useState(false);
-  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
 
   const validateEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   const isFormValid = name.trim().length > 1 && validateEmail(email) && gdpr;
 
   useEffect(() => {
-    const postHeight = () => {
-      try {
-        window.parent.postMessage({ type: "resize-iframe", height: document.body.scrollHeight }, "*");
-      } catch {}
-    };
-    postHeight();
-    const ro = new ResizeObserver(postHeight);
-    ro.observe(document.body);
-    return () => ro.disconnect();
-  }, [step]);
-
-  // 🔧 Updated: trigger quiz start on ?start=1 redirect
-  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("start") === "1") {
-      console.log("Start param detected — beginning quiz");
+      console.log("Start param detected — quiz unlocked");
       setStep(1);
       setConfirmedBanner(true);
       setTimeout(() => setConfirmedBanner(false), 2500);
@@ -141,7 +129,6 @@ export default function App() {
 
   async function handleStartClick() {
     if (!isFormValid) return;
-
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
 
@@ -154,23 +141,14 @@ export default function App() {
 
       const data = await resp.json();
       if (data.ok) {
-        setAwaitingConfirmation(true);
+        alert("Please check your inbox to confirm your email.");
       } else {
-        alert("Could not start confirmation. Try again later.");
+        alert(data.message || "Could not start confirmation. Try again later.");
       }
-    } catch {
+    } catch (err) {
       alert("Could not start confirmation. Try again later.");
     }
   }
-
-  if (awaitingConfirmation)
-    return (
-      <div style={{ fontFamily: "Poppins", textAlign: "center", padding: "40px 0" }}>
-        <h3>Please check your inbox to confirm your email address</h3>
-        <p>Your confirmation has been sent to <b>{email}</b>.</p>
-        <p style={{ fontSize: 13, color: "#666" }}>If you don’t see it, check spam.</p>
-      </div>
-    );
 
   const handleAnswer = (l) => {
     const next = [...answers];
@@ -179,6 +157,38 @@ export default function App() {
     if (step < questions.length) setStep(step + 1);
     else setSubmitted(true);
   };
+
+  async function handleFinish(res) {
+    try {
+      const payload = {
+        name,
+        email,
+        answers,
+        successPath: res.label,
+        gdpr,
+        dateISO: new Date().toISOString(),
+      };
+
+      console.log("Sending quiz results →", payload);
+
+      const response = await fetch("https://success-path-quiz.vercel.app/api/saveResult", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      console.log("saveResult response:", data);
+
+      if (!response.ok) throw new Error(data.error || "Save failed");
+      tagWithKit(email, res.label);
+    } catch (err) {
+      console.error("saveResult error:", err);
+      alert("Something went wrong saving your result.");
+    } finally {
+      window.top.location.href = res.url;
+    }
+  }
 
   if (step === 0)
     return (
@@ -200,12 +210,10 @@ export default function App() {
               <button
                 style={{
                   ...btnGreen,
-                  background: "#b9e085",
                   opacity: isFormValid ? 1 : 0.6,
+                  background: isFormValid ? "#b9e085" : "#fff",
                 }}
                 disabled={!isFormValid}
-                onMouseOver={(e) => (e.currentTarget.style.background = "#a6d674")}
-                onMouseOut={(e) => (e.currentTarget.style.background = "#b9e085")}
                 onClick={handleStartClick}
               >
                 Start Quiz →
@@ -222,35 +230,6 @@ export default function App() {
     const winner = Object.keys(tally).reduce((a, b) => (tally[a] > tally[b] ? a : b));
     const res = results[winner];
 
-    async function handleFinish() {
-      try {
-        const payload = {
-          name,
-          email,
-          answers,
-          successPath: res.label,
-          gdpr,
-          dateISO: new Date().toISOString(),
-        };
-
-        console.log("Sending quiz results →", payload);
-
-        const response = await fetch("https://success-path-quiz.vercel.app/api/saveResult", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        const data = await response.json();
-        console.log("saveResult response:", data);
-      } catch (err) {
-        console.error("saveResult error:", err);
-      } finally {
-        tagWithKit(email, res.label);
-        window.top.location.href = res.url;
-      }
-    }
-
     return (
       <div style={{ textAlign: "center", fontFamily: "Poppins", padding: "40px 0" }}>
         <h2 style={{ color: res.colour }}>Your Success Path is… {res.label}</h2>
@@ -258,7 +237,7 @@ export default function App() {
           style={{ ...btnGreen, borderColor: res.colour }}
           onMouseOver={(e) => (e.currentTarget.style.background = "#b9e085")}
           onMouseOut={(e) => (e.currentTarget.style.background = "#fff")}
-          onClick={handleFinish}
+          onClick={() => handleFinish(res)}
         >
           See Your Full Result →
         </button>
@@ -273,7 +252,7 @@ export default function App() {
     <div style={{ fontFamily: "Poppins", background: "#fff" }}>
       {confirmedBanner && (
         <div style={{ background: "#dbedbe", padding: 10, borderRadius: 6, textAlign: "center", marginBottom: 10 }}>
-          Thanks for confirming your email, enjoy the quiz.
+          Thanks for confirming — here’s your quiz
         </div>
       )}
       <div style={{ maxWidth: 720, margin: "0 auto", padding: 24, background: "#fff", borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}>
