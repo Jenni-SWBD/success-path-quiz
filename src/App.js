@@ -363,7 +363,7 @@ export default function App() {
     }
   }
 
-     /* =========================
+    /* =========================
      Intro Screen
      ========================= */
   useEffect(() => {
@@ -383,37 +383,37 @@ export default function App() {
       setTimeout(() => {
         document.body.classList.remove("fade-in");
       }, 1800);
-    return (
-  <div
-    style={{
-      position: "fixed",
-      top: "10vh",
-      left: 0,
-      width: "100%",
-      height: "calc(100vh - 20vh)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "flex-start",
-      background: "transparent",
-      zIndex: 9999,
-    }}
-  >
-    <div
-      style={{
-        width: "100%",
-        maxWidth: 600,
-        borderRadius: 12,
-        boxShadow: "0 4px 20px rgba(2,140,143,0.25)",
-        padding: 24,
-        background: "#fff",
-        textAlign: "center",
-      }}
-    >
+
+      return (
+        <div
+          style={{
+            width: "100%",
+            minHeight: "100dvh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            background: "transparent",
+            padding: "24px 16px",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 600,
+              borderRadius: 12,
+              boxShadow: "0 4px 20px rgba(2,140,143,0.25)",
+              padding: 24,
+              background: "#fff",
+              textAlign: "center",
+            }}
+          >
             <h3 style={{ marginBottom: 8, color: "#028c8f" }}>
               Check your inbox to verify your email address
             </h3>
             <p style={{ marginBottom: 12 }}>
-              We sent a confirmation to <b>{email}</b>. Click the link in that email to start your quiz.
+              We sent a confirmation to <b>{email}</b>. Click the link in that email to start your
+              quiz.
             </p>
             <p style={{ fontSize: 13, color: "#666" }}>
               If you don’t see it, please check Promotions or Spam folder.
@@ -494,17 +494,22 @@ export default function App() {
           </h2>
 
           <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
-            <b>Your energy already knows how to move.</b> This quiz helps you hear it so you can step into your business flow.
+            <b>Your energy already knows how to move.</b> This quiz helps you hear it so you can step
+            into your business flow.
           </p>
 
           <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 16 }}>
-            It’s not a personality test. It’s a precision tool that tunes you into your most active Success Path to help you align with the energy shaping what comes next.
+            It’s not a personality test. It’s a precision tool that tunes you into your most active
+            Success Path to help you align with the energy shaping what comes next.
           </p>
 
           {/* Form */}
           <div style={{ display: "grid", gap: 12 }}>
             <div style={{ display: "grid", gap: 6 }}>
-              <label htmlFor="name" style={{ fontSize: 14, fontWeight: 700, textAlign: "left" }}>
+              <label
+                htmlFor="name"
+                style={{ fontSize: 14, fontWeight: 700, textAlign: "left" }}
+              >
                 Name
               </label>
               <input
@@ -516,17 +521,32 @@ export default function App() {
                 onBlur={() => setNameTouched(true)}
                 aria-invalid={!!nameError}
                 aria-describedby="name-error"
-                style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc", fontSize: 16 }}
+                style={{
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid #ccc",
+                  fontSize: 16,
+                }}
               />
               {nameError && (
-                <div id="name-error" style={{ color: "red", fontSize: 14, textAlign: "left" }}>
+                <div
+                  id="name-error"
+                  style={{
+                    color: "red",
+                    fontSize: 14,
+                    textAlign: "left",
+                  }}
+                >
                   {nameError}
                 </div>
               )}
             </div>
 
             <div style={{ display: "grid", gap: 6 }}>
-              <label htmlFor="email" style={{ fontSize: 14, fontWeight: 700, textAlign: "left" }}>
+              <label
+                htmlFor="email"
+                style={{ fontSize: 14, fontWeight: 700, textAlign: "left" }}
+              >
                 Email
               </label>
               <input
@@ -538,10 +558,22 @@ export default function App() {
                 onBlur={() => setEmailTouched(true)}
                 aria-invalid={!!emailError}
                 aria-describedby="email-error"
-                style={{ padding: 12, borderRadius: 8, border: "1px solid #ccc", fontSize: 16 }}
+                style={{
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid #ccc",
+                  fontSize: 16,
+                }}
               />
               {emailError && (
-                <div id="email-error" style={{ color: "red", fontSize: 14, textAlign: "left" }}>
+                <div
+                  id="email-error"
+                  style={{
+                    color: "red",
+                    fontSize: 14,
+                    textAlign: "left",
+                  }}
+                >
                   {emailError}
                 </div>
               )}
@@ -567,8 +599,12 @@ export default function App() {
               }}
               disabled={!isFormValid}
               onClick={handleStartClick}
-              onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = sqsGreen)}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = sqsGreenHover)
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = sqsGreen)
+              }
             >
               Start Quiz →
             </button>
