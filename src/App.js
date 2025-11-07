@@ -363,7 +363,7 @@ export default function App() {
     }
   }
 
-  /* =========================
+    /* =========================
      Intro Screen
      ========================= */
   if (step === 0) {
@@ -387,30 +387,43 @@ export default function App() {
               textAlign: "center",
             }}
           >
-            <h3 style={{ marginBottom: 8 }}>Check your inbox to confirm your quiz</h3>
+            <h3 style={{ marginBottom: 8, color: "#028c8f" }}>
+              Check your inbox to verify your email address
+            </h3>
             <p style={{ marginBottom: 12 }}>
-              We sent a confirmation to <b>{email}</b>. Click the link in that email to return here and start the quiz.
+              We sent a confirmation to <b>{email}</b>. Click the link in that email to start your quiz.
             </p>
-            <p style={{ fontSize: 13, color: "#666" }}>If you don’t see it, check spam or click resend</p>
-            <div style={{ marginTop: 16 }}>
-              <button
-                style={btnGreen}
-                onClick={async () => {
-                  try {
-                    await fetch("/api/subscribe", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ email, first_name: name, last_name: "", quizData: {} }),
-                    });
-                    alert("Resent. Check your inbox");
-                  } catch {
-                    alert("Resend failed. Try again later");
-                  }
-                }}
-              >
-                Resend confirmation
-              </button>
-            </div>
+            <p style={{ fontSize: 13, color: "#666" }}>
+              If you don’t see it, please check Promotions or Spam folder.
+            </p>
+            <p
+              style={{
+                marginTop: 16,
+                fontSize: 14,
+                color: "#028c8f",
+                textDecoration: "underline",
+                cursor: "pointer",
+              }}
+              onClick={async () => {
+                try {
+                  await fetch("/api/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      email,
+                      first_name: name,
+                      last_name: "",
+                      quizData: {},
+                    }),
+                  });
+                  alert("Resent. Check your inbox.");
+                } catch {
+                  alert("Resend failed. Try again later.");
+                }
+              }}
+            >
+              Resend confirmation
+            </p>
           </div>
         </div>
       );
@@ -513,12 +526,23 @@ export default function App() {
             </div>
 
             <label style={{ fontSize: 14, textAlign: "left" }}>
-              <input type="checkbox" checked={gdpr} onChange={(e) => setGdpr(e.target.checked)} style={{ marginRight: 8 }} />
-              By entering your email, you agree to get your quiz results as well as insights and prompts for your next steps.
+              <input
+                type="checkbox"
+                checked={gdpr}
+                onChange={(e) => setGdpr(e.target.checked)}
+                style={{ marginRight: 8 }}
+              />
+              By entering your email, you agree to get your quiz results as well as insights and
+              prompts for your next steps.
             </label>
 
             <button
-              style={{ ...btnGreen, opacity: isFormValid ? 1 : 0.6, justifySelf: "center", width: "fit-content" }}
+              style={{
+                ...btnGreen,
+                opacity: isFormValid ? 1 : 0.6,
+                justifySelf: "center",
+                width: "fit-content",
+              }}
               disabled={!isFormValid}
               onClick={handleStartClick}
               onMouseEnter={(e) => (e.currentTarget.style.background = sqsGreenHover)}
