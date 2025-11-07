@@ -205,7 +205,7 @@ useEffect(() => {
   try {
     localStorage.setItem("quizEmail", email);
     localStorage.setItem("quizResult", results[winner].label);
-  } catch {}
+  } catch (e) {}
 
   fetch("/api/saveResult", {
     method: "POST",
@@ -214,19 +214,6 @@ useEffect(() => {
   }).catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [submitted]);
-
-    try {
-      localStorage.setItem("quizEmail", email);
-      localStorage.setItem("quizResult", results[winner].label);
-    } catch {}
-
-    fetch("/api/saveResult", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitted]);
 
   /* ==========================================
      --- Top-level KIT tagging effect ---
