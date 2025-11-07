@@ -363,7 +363,7 @@ export default function App() {
     }
   }
 
-    /* =========================
+   /* =========================
      Intro Screen
      ========================= */
   if (step === 0) {
@@ -374,15 +374,15 @@ export default function App() {
         document.body.classList.remove("fade-in");
       }, 1800);
       return (
-        <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
+        <div style={{ display: "grid", placeItems: "center", background: "transparent", height: "100vh" }}>
           <div
             style={{
               width: "100%",
               maxWidth: 600,
               borderRadius: 12,
-              boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+              boxShadow: "0 4px 20px rgba(2,140,143,0.2)",
               padding: 24,
-              margin: "20px auto",
+              margin: "10vh auto 0",
               background: "#fff",
               textAlign: "center",
             }}
