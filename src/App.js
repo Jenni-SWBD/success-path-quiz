@@ -367,15 +367,14 @@ export default function App() {
      Intro Screen
      ========================= */
   useEffect(() => {
-    // Make root backgrounds transparent when awaiting confirmation
-    if (awaitingConfirmation) {
+    // Always keep the quiz background transparent to show page design
+    const setTransparent = () => {
       document.body.style.background = "transparent";
       document.documentElement.style.background = "transparent";
-    } else {
-      document.body.style.background = "#fff";
-      document.documentElement.style.background = "#fff";
-    }
-  }, [awaitingConfirmation]);
+    };
+    setTransparent();
+    return () => setTransparent();
+  }, []);
 
   if (step === 0) {
     // If we've asked KIT to confirm and user is waiting, show check-inbox UI
