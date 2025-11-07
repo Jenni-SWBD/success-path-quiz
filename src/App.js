@@ -384,27 +384,29 @@ export default function App() {
       setTimeout(() => {
         document.body.classList.remove("fade-in");
       }, 1800);
-      return (
-        <div
-          style={{
-            display: "grid",
-            placeItems: "center",
-            background: "transparent",
-            height: "100vh",
-          }}
-        >
-          <div
-            style={{
-              width: "100%",
-              maxWidth: 600,
-              borderRadius: 12,
-              boxShadow: "0 4px 20px rgba(2,140,143,0.25)",
-              padding: 24,
-              margin: "10vh auto 0",
-              background: "#fff",
-              textAlign: "center",
-            }}
-          >
+    return (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      background: "transparent",
+      minHeight: "100vh",
+      paddingTop: "4vh",
+    }}
+  >
+    <div
+      style={{
+        width: "100%",
+        maxWidth: 600,
+        borderRadius: 12,
+        boxShadow: "0 4px 20px rgba(2,140,143,0.25)",
+        padding: 24,
+        background: "#fff",
+        textAlign: "center",
+      }}
+    >
+
             <h3 style={{ marginBottom: 8, color: "#028c8f" }}>
               Check your inbox to verify your email address
             </h3>
