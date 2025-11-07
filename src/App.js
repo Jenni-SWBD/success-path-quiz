@@ -388,13 +388,13 @@ export default function App() {
   <div
     style={{
       position: "fixed",
-      top: 0,
+      top: "10vh",
       left: 0,
       width: "100%",
-      height: "100vh",
+      height: "calc(100vh - 20vh)",
       display: "flex",
       justifyContent: "center",
-      alignItems: "center",
+      alignItems: "flex-start",
       background: "transparent",
       zIndex: 9999,
     }}
