@@ -393,7 +393,7 @@ export default function App() {
             justifyContent: "center",
             alignItems: "center",
             background: "transparent",
-            padding: "24px 16px",
+            padding: "80px 16px 24px", // added top padding to offset Squarespace clipping
             boxSizing: "border-box",
           }}
         >
