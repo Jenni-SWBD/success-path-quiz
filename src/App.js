@@ -363,9 +363,20 @@ export default function App() {
     }
   }
 
-   /* =========================
+     /* =========================
      Intro Screen
      ========================= */
+  useEffect(() => {
+    // Make root backgrounds transparent when awaiting confirmation
+    if (awaitingConfirmation) {
+      document.body.style.background = "transparent";
+      document.documentElement.style.background = "transparent";
+    } else {
+      document.body.style.background = "#fff";
+      document.documentElement.style.background = "#fff";
+    }
+  }, [awaitingConfirmation]);
+
   if (step === 0) {
     // If we've asked KIT to confirm and user is waiting, show check-inbox UI
     if (awaitingConfirmation) {
@@ -374,13 +385,20 @@ export default function App() {
         document.body.classList.remove("fade-in");
       }, 1800);
       return (
-        <div style={{ display: "grid", placeItems: "center", background: "transparent", height: "100vh" }}>
+        <div
+          style={{
+            display: "grid",
+            placeItems: "center",
+            background: "transparent",
+            height: "100vh",
+          }}
+        >
           <div
             style={{
               width: "100%",
               maxWidth: 600,
               borderRadius: 12,
-              boxShadow: "0 4px 20px rgba(2,140,143,0.2)",
+              boxShadow: "0 4px 20px rgba(2,140,143,0.25)",
               padding: 24,
               margin: "10vh auto 0",
               background: "#fff",
