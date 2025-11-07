@@ -183,19 +183,37 @@ export default function App() {
   };
 
   /* ==========================================
-     Persist to Google Sheets (once on submit)
-     ========================================== */
-  useEffect(() => {
-    if (!submitted) return;
-    const winner = calcResult();
-    const payload = {
-      dateISO: new Date().toISOString(),
-      name,
-      email,
-      gdpr,
-      answers,
-      successPath: results[winner].label,
-    };
+   Persist to Google Sheets (once on submit)
+   ========================================== */
+useEffect(() => {
+  if (!submitted) return;
+
+  // Prevent duplicate submissions
+  if (window.__quizSaved__) return;
+  window.__quizSaved__ = true;
+
+  const winner = calcResult();
+  const payload = {
+    dateISO: new Date().toISOString(),
+    name,
+    email,
+    gdpr,
+    answers,
+    successPath: results[winner].label,
+  };
+
+  try {
+    localStorage.setItem("quizEmail", email);
+    localStorage.setItem("quizResult", results[winner].label);
+  } catch {}
+
+  fetch("/api/saveResult", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [submitted]);
 
     try {
       localStorage.setItem("quizEmail", email);
