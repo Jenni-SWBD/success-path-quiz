@@ -457,7 +457,7 @@ export default function App() {
       document.body.classList.remove("fade-in");
     }, 1800); // slightly longer than 1s transition
     return (
-      <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
+      <div style={{ display: "grid", placeItems: "center", background: "#transparent" }}>
         <div
           style={{
             width: "100%",
@@ -585,7 +585,7 @@ export default function App() {
   if (submitted) {
     const res = resSubmitted;
     return (
-      <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
+      <div style={{ display: "grid", placeItems: "center", background: "#transparent" }}>
         <div
           style={{
             width: "100%",
@@ -638,7 +638,7 @@ export default function App() {
   const progress = Math.round(((step - 1) / questions.length) * 100);
 
   return (
-    <div style={{ display: "grid", placeItems: "center", background: "#fff" }}>
+    <div style={{ display: "grid", placeItems: "center", background: "#transparent" }}>
       <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", background: "#fff" }}>
         {/* small confirmed banner */}
         {confirmedBanner && <div style={{ background: "#b9e08520", padding: 12, borderRadius: 8, marginBottom: 12, textAlign: "center" }}>Thanks for confirming — here’s your quiz</div>}
