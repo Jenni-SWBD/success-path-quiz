@@ -24,17 +24,75 @@ async function tagWithKit(email, result) {
    (kept compact for readability)
    ========================================================= */
 const questions = [
-  { text: "1. What’s been on your mind most in business lately?", options: [{ text: "A. Being seen and heard more clearly", letter: "A" }, { text: "B. Reaching more people in the right way", letter: "B" }, { text: "C. Slowing down to reconnect with what matters", letter: "C" }, { text: "D. Changing direction or letting something go", letter: "D" }] },
-  { text: "2. What's feeling heavy right now?", options: [{ text: "A. Holding myself back, stagnating", letter: "A" }, { text: "B. The pressure to keep pushing", letter: "B" }, { text: "C. Constant juggling and overdoing", letter: "C" }, { text: "D. The sense that something’s ending, outdated or uncertain", letter: "D" }] },
-  { text: "3. Which of these excites you the most right now?", options: [{ text: "A. Sharing my voice and message", letter: "A" }, { text: "B. Creating new offers and opportunities", letter: "B" }, { text: "C. Building a life-business rhythm that fits me", letter: "C" }, { text: "D. Exploring a bolder, newer version of my work", letter: "D" }] },
-  { text: "4. What’s one thing you wish felt easier?", options: [{ text: "A. Showing up fully as myself", letter: "A" }, { text: "B. Expanding my work in a way that feels aligned", letter: "B" }, { text: "C. Managing my energy and time", letter: "C" }, { text: "D. Trusting big transitions", letter: "D" }] },
-  { text: "5. Which describes your current focus best?", options: [{ text: "A. Leading with my presence and purpose", letter: "A" }, { text: "B. Growing my business with clarity and confidence", letter: "B" }, { text: "C. Realigning my vision with my values and needs", letter: "C" }, { text: "D. Reimagining what success can look like for me", letter: "D" }] },
-  { text: "6. What’s calling you forward right now?", options: [{ text: "A. Greater visibility and influence", letter: "A" }, { text: "B. Sustainable, soul-aligned success", letter: "B" }, { text: "C. A return to flow and inner clarity", letter: "C" }, { text: "D. A full-soul pivot or transformation", letter: "D" }] },
-  { text: "7. What tends to derail you?", options: [{ text: "A. Fear of being too much or not enough", letter: "A" }, { text: "B. Chasing results that drain me", letter: "B" }, { text: "C. Ignoring my own needs", letter: "C" }, { text: "D. Staying stuck in the old version of me", letter: "D" }] },
-  { text: "8. How do you usually reset when things feel off?", options: [{ text: "A. Reconnect with my why and speak it out loud", letter: "A" }, { text: "B. Rework my plans or get clearer strategy", letter: "B" }, { text: "C. Take a step back and restore my energy", letter: "C" }, { text: "D. Dive into deep reflection or journalling", letter: "D" }] },
-  { text: "9. What do you most want in this next phase?", options: [{ text: "A. To feel seen, trusted and in my power", letter: "A" }, { text: "B. To grow in a way that lasts", letter: "B" }, { text: "C. To feel spacious, present and aligned", letter: "C" }, { text: "D. To grow into the next better version of myself", letter: "D" }] },
-  { text: "10. When things feel uncertain, what’s your go-to response pattern?", options: [{ text: "A. I step into control mode, clarity comes when I take the lead", letter: "A" }, { text: "B. I get restless or try to fix it by doing more", letter: "B" }, { text: "C. I shut down or quietly check out to protect my energy", letter: "C" }, { text: "D. I spiral a little... old fears flare up and I question everything", letter: "D" }] },
-  { text: "11. Which belief are you most ready to let go of even if part of you still clings to it?", options: [{ text: "A. That I have to tone myself down to be accepted", letter: "A" }, { text: "B. That I need to earn rest by proving my worth", letter: "B" }, { text: "C. That I’m only valuable when I’m useful to others", letter: "C" }, { text: "D. That I need to have it all figured out before I take the next step", letter: "D" }] },
+  { text: "1. What’s been off in your business lately?", options: [
+    { text: "A. My voice feels muted", letter: "A" },
+    { text: "B. My growth feels scattered", letter: "B" },
+    { text: "C. My energy feels stretched", letter: "C" },
+    { text: "D. My direction feels out of date", letter: "D" }
+  ]},
+
+  { text: "2. What feels heavy right now?", options: [
+    { text: "A. Holding myself back", letter: "A" },
+    { text: "B. Pouring effort into the wrong things", letter: "B" },
+    { text: "C. Carrying too much", letter: "C" },
+    { text: "D. Staying in something that needs to change", letter: "D" }
+  ]},
+
+  { text: "3. What would feel good to shift?", options: [
+    { text: "A. How I show up", letter: "A" },
+    { text: "B. Where I focus", letter: "B" },
+    { text: "C. How I work day to day", letter: "C" },
+    { text: "D. The whole shape of what I’m building", letter: "D" }
+  ]},
+
+  { text: "4. What do you wish felt clearer?", options: [
+    { text: "A. My message", letter: "A" },
+    { text: "B. My strategy", letter: "B" },
+    { text: "C. My energy", letter: "C" },
+    { text: "D. My next step", letter: "D" }
+  ]},
+
+  { text: "5. What feels like your next step up?", options: [
+    { text: "A. Being more visible", letter: "A" },
+    { text: "B. Growing with intent", letter: "B" },
+    { text: "C. Working in a way that supports me", letter: "C" },
+    { text: "D. Letting something evolve", letter: "D" }
+  ]},
+
+  { text: "6. Where do you feel the most momentum building?", options: [
+    { text: "A. My presence", letter: "A" },
+    { text: "B. My growth", letter: "B" },
+    { text: "C. My alignment", letter: "C" },
+    { text: "D. My evolution", letter: "D" }
+  ]},
+
+  { text: "7. What tends to derail you?", options: [
+    { text: "A. Doubting my voice", letter: "A" },
+    { text: "B. Chasing results that drain me", letter: "B" },
+    { text: "C. Ignoring my own needs", letter: "C" },
+    { text: "D. Staying loyal to old versions of me", letter: "D" }
+  ]},
+
+  { text: "8. How do you reset?", options: [
+    { text: "A. I reconnect with what I want to say", letter: "A" },
+    { text: "B. I tidy my plans", letter: "B" },
+    { text: "C. I slow down and regroup", letter: "C" },
+    { text: "D. I reflect and reassess", letter: "D" }
+  ]},
+
+  { text: "9. What do you want next?", options: [
+    { text: "A. Strong voice and presence", letter: "A" },
+    { text: "B. Growth that fits", letter: "B" },
+    { text: "C. Space and steadiness", letter: "C" },
+    { text: "D. A fresh direction", letter: "D" }
+  ]},
+
+  { text: "10. When things get uncertain, what’s your go-to response?", options: [
+    { text: "A. I take charge", letter: "A" },
+    { text: "B. I speed up", letter: "B" },
+    { text: "C. I pull back", letter: "C" },
+    { text: "D. I question everything", letter: "D" }
+  ]}
 ];
 
 const results = {
