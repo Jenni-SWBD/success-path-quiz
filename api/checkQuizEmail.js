@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: "v4", auth });
 
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const range = "Sheet1!C:C"; // email column
+    const range = "Responses!C:C"; // email column
 
     const resp = await sheets.spreadsheets.values.get({
       spreadsheetId,
