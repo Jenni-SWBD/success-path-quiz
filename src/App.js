@@ -433,32 +433,41 @@ useEffect(() => {
 
   // New: start handler to trigger KIT double opt-in and show "check inbox"
   async function handleStartClick() {
-    setNameTouched(true);
-    setEmailTouched(true);
-    if (validateName(name) || validateEmail(email) || !gdpr) return;
+  setNameTouched(true);
+  setEmailTouched(true);
+  if (validateName(name) || validateEmail(email) || !gdpr) return;
 
-    try {
-      localStorage.setItem("quizName", name);
-      localStorage.setItem("quizEmail", email);
-    } catch (e) {}
+  try {
+    localStorage.setItem("quizName", name);
+    localStorage.setItem("quizEmail", email);
+  } catch (e) {}
 
-    try {
-      await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          first_name: name,
-          last_name: "",
-          quizData: {},
-        }),
-      });
+  try {
+    const res = await fetch("/api/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        first_name: name,
+        last_name: "",
+        quizData: {},
+      }),
+    });
+
+    const data = await res.json();
+
+    // Existing KIT subscriber → start quiz immediately
+    if (data?.alreadyConfirmed) {
+      setStep(1);
+    } else {
+      // New subscriber → wait for confirmation email
       setAwaitingConfirmation(true);
-    } catch (err) {
-      console.error(err);
-      alert("Could not start confirmation. Try again later");
     }
+  } catch (err) {
+    console.error(err);
+    alert("Could not start confirmation. Try again later");
   }
+}
 
     /* =========================
      Intro Screen
