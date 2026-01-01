@@ -438,6 +438,10 @@ useEffect(() => {
   setEmailTouched(true);
   if (validateName(name) || validateEmail(email) || !gdpr) return;
 
+  // 🔴 REQUIRED RESET
+  setAwaitingConfirmation(false);
+  setWelcomeBack(false);
+  
   try {
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
