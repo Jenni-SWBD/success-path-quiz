@@ -14,6 +14,11 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log(
+    "GOOGLE_SERVICE_ACCOUNT exists:",
+  !!process.env.GOOGLE_SERVICE_ACCOUNT
+);
+
     const auth = new google.auth.GoogleAuth({
       credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT),
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
