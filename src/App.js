@@ -482,270 +482,234 @@ useEffect(() => {
 }
 
   /* =========================
-     Intro Screen
-     ========================= */
+   Intro Screen
+   ========================= */
 
-  useEffect(() => {
-    // Always keep the quiz background transparent to show page design
-    const setTransparent = () => {
-      document.body.style.background = "transparent";
-      document.documentElement.style.background = "transparent";
-    };
-    setTransparent();
-    return () => setTransparent();
-  }, []);
+useEffect(() => {
+  // Always keep the quiz background transparent to show page design
+  const setTransparent = () => {
+    document.body.style.background = "transparent";
+    document.documentElement.style.background = "transparent";
+  };
+  setTransparent();
+  return () => setTransparent();
+}, []);
 
-  if (step === 0) {
-    // If we've asked KIT to confirm and user is waiting, show check-inbox UI
-    if (awaitingConfirmation) {
-      document.body.classList.add("fade-in");
-      setTimeout(() => {
-        document.body.classList.remove("fade-in");
-      }, 1800);
+// STEP 0 only
+if (step === 0) {
 
-      return (
-        <div
-          style={{
-            width: "100%",
-            minHeight: "100dvh",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            background: "transparent",
-            padding: "80px 16px 24px", // added top padding to offset Squarespace clipping
-            boxSizing: "border-box",
-          }}
-        >
-          <div
-            style={{
-              width: "100%",
-              maxWidth: 600,
-              borderRadius: 12,
-              boxShadow: "0 4px 20px rgba(2,140,143,0.25)",
-              padding: 24,
-              background: "#fff",
-              textAlign: "center",
-            }}
-          >
-            <h3 style={{ marginBottom: 8, color: "#028c8f" }}>
-  {welcomeBack ? "Welcome back." : "Check your inbox to verify your email address"}
-</h3>
-{welcomeBack && (
-  <p style={{ fontSize: 14, color: "#666", marginBottom: 12 }}>
-    You’ve already confirmed your email, welcome back.
-  </p>
-)}
-
-<p style={{ marginBottom: 12 }}>
-  {welcomeBack ? (
-    <>
-  Your Success Path isn’t fixed. It shifts as your business, energy and focus evolve.
-  <br /><br />
-  Taking the quiz again helps you see what’s most active now so you can respond with precision rather than habit.
-</>
-
-  ) : (
-    <>
-      We sent a confirmation to <b>{email}</b>. Click the link in that email to start your quiz.
-    </>
-  )}
-</p>
-
-            <p
-              style={{
-                marginTop: 16,
-                fontSize: 14,
-                color: "#028c8f",
-                textDecoration: "underline",
-                cursor: "pointer",
-              }}
-              onClick={async () => {
-                try {
-                  await fetch("/api/subscribe", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      email,
-                      first_name: name,
-                      last_name: "",
-                      quizData: {},
-                    }),
-                  });
-                  alert("Resent. Check your inbox.");
-                } catch {
-                  alert("Resend failed. Try again later.");
-                }
-              }}
-            >
-              Resend confirmation
-            </p>
-          </div>
-        </div>
-      );
-    }
-
+  // ───────────────────────────────────────
+  // Confirmation screen (NEW users ONLY)
+  // ───────────────────────────────────────
+  if (awaitingConfirmation && !welcomeBack) {
     document.body.classList.add("fade-in");
     setTimeout(() => {
       document.body.classList.remove("fade-in");
-    }, 1800); // slightly longer than 1s transition
+    }, 1800);
+
     return (
-      <div style={{ display: "grid", placeItems: "center", background: "#transparent" }}>
+      <div
+        style={{
+          width: "100%",
+          minHeight: "100dvh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "transparent",
+          padding: "80px 16px 24px",
+          boxSizing: "border-box",
+        }}
+      >
         <div
           style={{
             width: "100%",
             maxWidth: 600,
             borderRadius: 12,
-            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+            boxShadow: "0 4px 20px rgba(2,140,143,0.25)",
             padding: 24,
-            margin: "20px auto",
             background: "#fff",
+            textAlign: "center",
           }}
         >
-          {/* Hero Image */}
-          <img
-            src="/quiz-cover.png"
-            alt="Success Path Quiz"
-            style={{
-              width: "100%",
-              maxHeight: "220px",
-              objectFit: "cover",
-              borderRadius: 8,
-              marginBottom: 12,
-            }}
-          />
+          <h3 style={{ marginBottom: 8, color: "#028c8f" }}>
+            Check your inbox to verify your email address
+          </h3>
 
-          {/* Intro Text */}
-          <h2
+          <p style={{ marginBottom: 12 }}>
+            We sent a confirmation to <b>{email}</b>.
+            <br /><br />
+            Click the link in that email to start your quiz.
+          </p>
+
+          <p
             style={{
-              fontSize: 22,
-              fontWeight: 700,
-              marginBottom: 12,
+              marginTop: 16,
+              fontSize: 14,
               color: "#028c8f",
+              textDecoration: "underline",
+              cursor: "pointer",
+            }}
+            onClick={async () => {
+              try {
+                await fetch("/api/subscribe", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    email,
+                    first_name: name,
+                    last_name: "",
+                    quizData: {},
+                  }),
+                });
+                alert("Resent. Check your inbox.");
+              } catch {
+                alert("Resend failed. Try again later.");
+              }
             }}
           >
-            Discover Your Success Path
-          </h2>
-
-          <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
-            <b>Your energy already knows how to move.</b> This quiz helps you hear it so you can step
-            into your business flow.
+            Resend confirmation
           </p>
-
-          <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 16 }}>
-            It’s not a personality test. It’s a precision tool that tunes you into your most active
-            Success Path to help you align with the energy shaping what comes next.
-          </p>
-
-          {/* Form */}
-          <div style={{ display: "grid", gap: 12 }}>
-            <div style={{ display: "grid", gap: 6 }}>
-              <label
-                htmlFor="name"
-                style={{ fontSize: 14, fontWeight: 700, textAlign: "left" }}
-              >
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                placeholder="Your Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onBlur={() => setNameTouched(true)}
-                aria-invalid={!!nameError}
-                aria-describedby="name-error"
-                style={{
-                  padding: 12,
-                  borderRadius: 8,
-                  border: "1px solid #ccc",
-                  fontSize: 16,
-                }}
-              />
-              {nameError && (
-                <div
-                  id="name-error"
-                  style={{
-                    color: "red",
-                    fontSize: 14,
-                    textAlign: "left",
-                  }}
-                >
-                  {nameError}
-                </div>
-              )}
-            </div>
-
-            <div style={{ display: "grid", gap: 6 }}>
-              <label
-                htmlFor="email"
-                style={{ fontSize: 14, fontWeight: 700, textAlign: "left" }}
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="Your Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => setEmailTouched(true)}
-                aria-invalid={!!emailError}
-                aria-describedby="email-error"
-                style={{
-                  padding: 12,
-                  borderRadius: 8,
-                  border: "1px solid #ccc",
-                  fontSize: 16,
-                }}
-              />
-              {emailError && (
-                <div
-                  id="email-error"
-                  style={{
-                    color: "red",
-                    fontSize: 14,
-                    textAlign: "left",
-                  }}
-                >
-                  {emailError}
-                </div>
-              )}
-            </div>
-
-            <label style={{ fontSize: 14, textAlign: "left" }}>
-              <input
-                type="checkbox"
-                checked={gdpr}
-                onChange={(e) => setGdpr(e.target.checked)}
-                style={{ marginRight: 8 }}
-              />
-              By entering your email, you agree to get your quiz results as well as insights and
-              prompts for your next steps.
-            </label>
-
-            <button
-              style={{
-                ...btnGreen,
-                opacity: isFormValid ? 1 : 0.6,
-                justifySelf: "center",
-                width: "fit-content",
-              }}
-              disabled={!isFormValid}
-              onClick={handleStartClick}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.background = sqsGreenHover)
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.background = sqsGreen)
-              }
-            >
-              Start Quiz →
-            </button>
-          </div>
         </div>
       </div>
     );
   }
+
+  // ───────────────────────────────────────
+  // Default intro form
+  // ───────────────────────────────────────
+  document.body.classList.add("fade-in");
+  setTimeout(() => {
+    document.body.classList.remove("fade-in");
+  }, 1800);
+
+  return (
+    <div style={{ display: "grid", placeItems: "center", background: "transparent" }}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 600,
+          borderRadius: 12,
+          boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+          padding: 24,
+          margin: "20px auto",
+          background: "#fff",
+        }}
+      >
+        {/* Hero Image */}
+        <img
+          src="/quiz-cover.png"
+          alt="Success Path Quiz"
+          style={{
+            width: "100%",
+            maxHeight: "220px",
+            objectFit: "cover",
+            borderRadius: 8,
+            marginBottom: 12,
+          }}
+        />
+
+        {/* Intro Text */}
+        <h2
+          style={{
+            fontSize: 22,
+            fontWeight: 700,
+            marginBottom: 12,
+            color: "#028c8f",
+          }}
+        >
+          Discover Your Success Path
+        </h2>
+
+        <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
+          <b>Your energy already knows how to move.</b> This quiz helps you hear it so you can step
+          into your business flow.
+        </p>
+
+        <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 16 }}>
+          It’s not a personality test. It’s a precision tool that tunes you into your most active
+          Success Path to help you align with the energy shaping what comes next.
+        </p>
+
+        {/* Form */}
+        <div style={{ display: "grid", gap: 12 }}>
+          <div style={{ display: "grid", gap: 6 }}>
+            <label htmlFor="name" style={{ fontSize: 14, fontWeight: 700, textAlign: "left" }}>
+              Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onBlur={() => setNameTouched(true)}
+              style={{
+                padding: 12,
+                borderRadius: 8,
+                border: "1px solid #ccc",
+                fontSize: 16,
+              }}
+            />
+            {nameError && (
+              <div style={{ color: "red", fontSize: 14, textAlign: "left" }}>
+                {nameError}
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: "grid", gap: 6 }}>
+            <label htmlFor="email" style={{ fontSize: 14, fontWeight: 700, textAlign: "left" }}>
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Your Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setEmailTouched(true)}
+              style={{
+                padding: 12,
+                borderRadius: 8,
+                border: "1px solid #ccc",
+                fontSize: 16,
+              }}
+            />
+            {emailError && (
+              <div style={{ color: "red", fontSize: 14, textAlign: "left" }}>
+                {emailError}
+              </div>
+            )}
+          </div>
+
+          <label style={{ fontSize: 14, textAlign: "left" }}>
+            <input
+              type="checkbox"
+              checked={gdpr}
+              onChange={(e) => setGdpr(e.target.checked)}
+              style={{ marginRight: 8 }}
+            />
+            By entering your email, you agree to get your quiz results as well as insights and
+            prompts for your next steps.
+          </label>
+
+          <button
+            style={{
+              ...btnGreen,
+              opacity: isFormValid ? 1 : 0.6,
+              justifySelf: "center",
+              width: "fit-content",
+            }}
+            disabled={!isFormValid}
+            onClick={handleStartClick}
+          >
+            Start Quiz →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
   
   /* =========================
      Results Screen
