@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
   }
 
-  const { email, first_name = "", last_name = "", quizData = {} } = req.body || {};
+  const { email, first_name = "", last_name = "" } = req.body || {};
 
   if (!email) {
     return res.status(400).json({ ok: false, message: "Email is required" });
@@ -20,13 +20,36 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 1. Look up subscriber by email
+    const lookupResp = await fetch(
+      `https://api.convertkit.com/v3/subscribers?api_key=${kitApiKey}&email_address=${encodeURIComponent(
+        email
+      )}`
+    );
+
+    const lookupJson = await lookupResp.json();
+
+    if (lookupResp.ok && lookupJson?.subscribers?.length > 0) {
+      const subscriber = lookupJson.subscribers[0];
+
+      // Already confirmed subscriber
+      if (subscriber.state === "active") {
+        return res.status(200).json({
+          ok: true,
+          status: "confirmed",
+        });
+      }
+    }
+
+    // 2. Not confirmed yet → subscribe (this triggers confirmation email)
     const body = {
       api_key: kitApiKey,
       email,
       first_name,
+      last_name,
     };
 
-    const kitResp = await fetch(
+    const subscribeResp = await fetch(
       `https://api.convertkit.com/v3/forms/${kitFormId}/subscribe`,
       {
         method: "POST",
@@ -35,18 +58,20 @@ export default async function handler(req, res) {
       }
     );
 
-    const kitJson = await kitResp.json();
+    const subscribeJson = await subscribeResp.json();
 
-    if (!kitResp.ok) {
-      console.error("KIT API error", kitJson);
-      return res
-        .status(500)
-        .json({ ok: false, message: "Could not start confirmation. Try again later." });
+    if (!subscribeResp.ok) {
+      console.error("KIT subscribe error", subscribeJson);
+      return res.status(500).json({
+        ok: false,
+        message: "Could not start confirmation. Try again later.",
+      });
     }
 
-    return res
-      .status(200)
-      .json({ ok: true, message: "Confirmation sent. Please check your inbox." });
+    return res.status(200).json({
+      ok: true,
+      status: "confirmation_sent",
+    });
   } catch (err) {
     console.error("Subscribe error", err);
     return res.status(500).json({ ok: false, message: "Server error" });
