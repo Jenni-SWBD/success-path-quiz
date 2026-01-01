@@ -437,46 +437,42 @@ useEffect(() => {
   try {
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
-  } catch (e) {}
+  } catch {}
 
+  // 1. Check Google Sheet FIRST
+  const checkRes = await fetch("/api/checkQuizEmail", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  const checkData = await checkRes.json();
+
+  // 2. Returning quiz taker → enter immediately
+  if (checkData?.hasTakenQuiz) {
+    setWelcomeBack(true);
+    setAwaitingConfirmation(false);
+    setConfirmedBanner(true);
+    setTimeout(() => setConfirmedBanner(false), 2500);
+    setStep(1);
+    return;
+  }
+
+  // 3. New quiz taker → ONLY now show confirmation
   try {
-    // 🔍 NEW: check if this email has taken the quiz before
-    const checkRes = await fetch("/api/checkQuizEmail", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-
-    const checkData = await checkRes.json();
-
-    if (checkData?.hasTakenQuiz) {
-      // Returning quiz-taker → bypass KIT completely
-      setWelcomeBack(true);
-      setAwaitingConfirmation(false);
-      setConfirmedBanner(true);
-      setTimeout(() => setConfirmedBanner(false), 2500);
-      setStep(1);
-      return;
-    }
-
-    // Otherwise continue with normal KIT confirmation
-    const res = await fetch("/api/subscribe", {
+    await fetch("/api/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email,
         first_name: name,
         last_name: "",
-        quizData: {},
       }),
     });
 
-    await res.json();
-
     setWelcomeBack(false);
     setAwaitingConfirmation(true);
-  } catch (err) {
-    console.error(err);
+  } catch {
     alert("Could not start confirmation. Try again later");
   }
 }
