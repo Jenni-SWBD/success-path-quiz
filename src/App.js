@@ -453,15 +453,17 @@ useEffect(() => {
 
       const data = await res.json();
 
-      // Reset any prior banner state
+      // Reset any prior quiz state
     setConfirmedBanner(false);
 
+    // Returning subscriber → skip confirmation entirely
     if (data?.alreadyConfirmed) {
-      // Returning subscriber → skip confirmation, start quiz
       setWelcomeBack(true);
       setAwaitingConfirmation(false);
       setStep(1);
-    } else {
+      return;
+    }
+    
       // New subscriber → wait for email confirmation
       setWelcomeBack(false);
       setAwaitingConfirmation(true);
