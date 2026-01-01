@@ -795,11 +795,15 @@ if (step === 0) {
         {confirmedBanner && (
   <div
     style={{
-      background: "#b9e08520",
+      background: "#b9e08540",
+      border: "1px solid #a4cc73",
+      color: "#1f3f2f",
       padding: 12,
       borderRadius: 8,
       marginBottom: 12,
       textAlign: "center",
+      fontSize: 15,
+      lineHeight: 1.5,
     }}
   >
     {welcomeBack
