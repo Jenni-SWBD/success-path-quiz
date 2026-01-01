@@ -179,6 +179,8 @@ export default function App() {
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
 
+    const saveInFlightRef = useRef(false);
+
   /* ==========================================
      Squarespace auto-resize (postMessage)
      ========================================== */
@@ -270,8 +272,8 @@ useEffect(() => {
   if (!submitted) return;
 
   // Prevent duplicate submissions
-  if (window.__quizSaved__) return;
-  window.__quizSaved__ = true;
+  if (saveInFlightRef.current) return;
+  saveInFlightRef.current = true;
 
   const winner = calcResult();
   const payload = {
@@ -289,11 +291,14 @@ useEffect(() => {
   } catch (e) {}
 
   fetch("/api/saveResult", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  }).catch(() => {});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload),
+}).catch(() => {
+  // allow retry if the save genuinely fails
+  saveInFlightRef.current = false;
+});
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [submitted]);
 
   /* ==========================================
