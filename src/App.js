@@ -437,7 +437,29 @@ useEffect(() => {
   try {
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
+  } catch (e) {}
 
+  try {
+    // 🔍 NEW: check if this email has taken the quiz before
+    const checkRes = await fetch("/api/checkQuizEmail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const checkData = await checkRes.json();
+
+    if (checkData?.hasTakenQuiz) {
+      // Returning quiz-taker → bypass KIT completely
+      setWelcomeBack(true);
+      setAwaitingConfirmation(false);
+      setConfirmedBanner(true);
+      setTimeout(() => setConfirmedBanner(false), 2500);
+      setStep(1);
+      return;
+    }
+
+    // Otherwise continue with normal KIT confirmation
     const res = await fetch("/api/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -449,23 +471,10 @@ useEffect(() => {
       }),
     });
 
-    const data = await res.json();
+    await res.json();
 
-    // Reset any prior quiz state
-    setConfirmedBanner(false);
-
-    // Returning subscriber → skip confirmation screen
-    if (data?.alreadyConfirmed) {
-      setWelcomeBack(true);
-      setAwaitingConfirmation(false);
-      setStep(1);
-      return;
-    }
-
-    // New subscriber → wait for email confirmation
     setWelcomeBack(false);
     setAwaitingConfirmation(true);
-
   } catch (err) {
     console.error(err);
     alert("Could not start confirmation. Try again later");
