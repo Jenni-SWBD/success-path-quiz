@@ -220,6 +220,17 @@ export default function App() {
     };
   }, [step]);
 
+/* ==========================================
+   Page fade-in (safe)
+   ========================================== */
+useEffect(() => {
+  document.body.classList.add("fade-in");
+  const t = setTimeout(() => {
+    document.body.classList.remove("fade-in");
+  }, 1800);
+  return () => clearTimeout(t);
+}, [step]);
+
   /* ==========================================
      Validation helpers
      ========================================== */
@@ -511,11 +522,7 @@ if (step === 0) {
   // Confirmation screen (NEW users ONLY)
   // ───────────────────────────────────────
   if (awaitingConfirmation && !welcomeBack) {
-    document.body.classList.add("fade-in");
-    setTimeout(() => {
-      document.body.classList.remove("fade-in");
-    }, 1800);
-
+  
     return (
       <div
         style={{
@@ -586,10 +593,6 @@ if (step === 0) {
   // ───────────────────────────────────────
   // Default intro form
   // ───────────────────────────────────────
-  document.body.classList.add("fade-in");
-  setTimeout(() => {
-    document.body.classList.remove("fade-in");
-  }, 1800);
 
   return (
     <div style={{ display: "grid", placeItems: "center", background: "transparent" }}>
@@ -719,8 +722,7 @@ if (step === 0) {
     </div>
   );
 }
-  
-  /* =========================
+    /* =========================
      Results Screen
      ========================= */
   if (submitted) {
