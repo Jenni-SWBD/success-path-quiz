@@ -456,7 +456,7 @@ useEffect(() => {
       // Reset any prior quiz state
     setConfirmedBanner(false);
 
-    // Returning subscriber → skip confirmation
+    // Returning sub → skip confirmation
     if (data?.alreadyConfirmed) {
       setWelcomeBack(true);
       setAwaitingConfirmation(false);
@@ -464,7 +464,7 @@ useEffect(() => {
       return;
     }
 
-      // New subscriber → wait for email confirmation
+      // New sub → wait for email confirmation
       setWelcomeBack(false);
       setAwaitingConfirmation(true);
     }
