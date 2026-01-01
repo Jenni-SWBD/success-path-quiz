@@ -244,12 +244,18 @@ export default function App() {
      Quiz handlers
      ========================================== */
   const handleAnswer = (letter) => {
-    const next = [...answers];
-    next[step - 1] = letter;
-    setAnswers(next);
-    if (step < questions.length) setStep(step + 1);
-    else setSubmitted(true);
-  };
+  const next = [...answers];
+  next[step - 1] = letter;
+  setAnswers(next);
+
+  if (step < questions.length) {
+    setStep(step + 1);
+  } else {
+    // force submission regardless of KIT state
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(true), 0);
+  }
+};
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
