@@ -454,13 +454,13 @@ useEffect(() => {
 
   // 2. Returning quiz taker → enter immediately
   if (checkData?.hasTakenQuiz) {
-    setWelcomeBack(true);
-    setAwaitingConfirmation(false);
-    setConfirmedBanner(true);
-    setTimeout(() => setConfirmedBanner(false), 2500);
-    setStep(1);
-    return;
-  }
+  setStep(1);                    // ← FIRST
+  setWelcomeBack(true);
+  setAwaitingConfirmation(false);
+  setConfirmedBanner(true);
+  setTimeout(() => setConfirmedBanner(false), 2500);
+  return;
+}
 
   // 3. New quiz taker → ONLY now show confirmation
   try {
