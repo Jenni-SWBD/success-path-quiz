@@ -176,6 +176,9 @@ export default function App() {
   const [confirmedBanner, setConfirmedBanner] = useState(false);
   const [welcomeBack, setWelcomeBack] = useState(false);
 
+    // Email check gate
+  const [emailCheckComplete, setEmailCheckComplete] = useState(false);
+
   // Quiz state
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
@@ -439,9 +442,10 @@ useEffect(() => {
   if (validateName(name) || validateEmail(email) || !gdpr) return;
 
   // 🔴 REQUIRED RESET
+  setEmailCheckComplete(false);    // ADDED
   setAwaitingConfirmation(false);
   setWelcomeBack(false);
-  
+
   try {
     localStorage.setItem("quizName", name);
     localStorage.setItem("quizEmail", email);
@@ -455,6 +459,7 @@ useEffect(() => {
   });
 
   const checkData = await checkRes.json();
+  setEmailCheckComplete(true);
 
   // 2. Returning quiz taker → enter immediately
   if (checkData?.hasTakenQuiz) {
@@ -500,7 +505,7 @@ useEffect(() => {
 }, []);
 
 // STEP 0 only
-if (step === 0) {
+if (step === 0 && emailCheckComplete) {
 
   // ───────────────────────────────────────
   // Confirmation screen (NEW users ONLY)
