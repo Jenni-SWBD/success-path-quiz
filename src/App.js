@@ -326,6 +326,8 @@ useEffect(() => {
 const hasConfirmedRef = useRef(false);
 
 useEffect(() => {
+  // 🔒 If quiz already started via Start button, do nothing
+  if (step !== 0) return;
   if (hasConfirmedRef.current) return;
 
   try {
@@ -351,7 +353,6 @@ useEffect(() => {
     } catch (e) {}
 
     setAwaitingConfirmation(false);
-    setWelcomeBack(false);
     setConfirmedBanner(true);
     setTimeout(() => setConfirmedBanner(false), 3500);
 
@@ -369,8 +370,7 @@ useEffect(() => {
   } catch (e) {
     // ignore malformed URL or embed edge cases
   }
-  // run once
-}, []);
+}, [step]);
 
     /* ==========================================
      PostMessage listener: listen for parent page telling us to start
