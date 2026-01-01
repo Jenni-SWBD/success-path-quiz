@@ -175,12 +175,10 @@ export default function App() {
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
   const [confirmedBanner, setConfirmedBanner] = useState(false);
   const [welcomeBack, setWelcomeBack] = useState(false);
+
+  // Email check gate
   const [emailCheckComplete, setEmailCheckComplete] = useState(false);
-
-
-    // Email check gate
-  const [emailCheckComplete, setEmailCheckComplete] = useState(false);
-
+ 
   // Quiz state
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
