@@ -328,8 +328,7 @@ const hasConfirmedRef = useRef(false);
 useEffect(() => {
   // 🚫 Do not interfere with returning quiz takers
   if (welcomeBack) return;
-  
-useEffect(() => {
+
   // 🔒 If quiz already started via Start button, do nothing
   if (step !== 0) return;
   if (hasConfirmedRef.current) return;
@@ -374,7 +373,7 @@ useEffect(() => {
   } catch (e) {
     // ignore malformed URL or embed edge cases
   }
-}, [step]);
+}, [step, welcomeBack]);
 
     /* ==========================================
      PostMessage listener: listen for parent page telling us to start
