@@ -353,7 +353,7 @@ useEffect(() => {
       const savedEmail = localStorage.getItem("quizEmail");
       if (savedName) setName(savedName);
       if (savedEmail) setEmail(savedEmail);
-    } catch (e) {}
+    } catch {}
 
     setAwaitingConfirmation(false);
     setConfirmedBanner(true);
@@ -369,15 +369,16 @@ useEffect(() => {
         clean.hash = "";
       }
       window.history.replaceState({}, "", clean.toString());
-    } catch (e) {}
-  } catch (e) {
+    } catch {}
+  } catch {
     // ignore malformed URL or embed edge cases
   }
 }, [step, welcomeBack]);
 
-    /* ==========================================
-     PostMessage listener: listen for parent page telling us to start
-     ========================================== */
+/* ==========================================
+   PostMessage listener: listen for parent page telling us to start
+   ========================================== */
+
   useEffect(() => {
     function onMessage(e) {
       try {
