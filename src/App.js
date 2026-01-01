@@ -430,33 +430,31 @@ useEffect(() => {
      Start handler: trigger KIT double opt-in
      ========================================== */
   async function handleStartClick() {
-    setNameTouched(true);
-    setEmailTouched(true);
-    if (validateName(name) || validateEmail(email) || !gdpr) return;
+  setNameTouched(true);
+  setEmailTouched(true);
+  if (validateName(name) || validateEmail(email) || !gdpr) return;
 
-    try {
-      localStorage.setItem("quizName", name);
-      localStorage.setItem("quizEmail", email);
-    } catch (e) {}
+  try {
+    localStorage.setItem("quizName", name);
+    localStorage.setItem("quizEmail", email);
 
-    try {
-      const res = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          first_name: name,
-          last_name: "",
-          quizData: {},
-        }),
-      });
+    const res = await fetch("/api/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        first_name: name,
+        last_name: "",
+        quizData: {},
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      // Reset any prior quiz state
+    // Reset any prior quiz state
     setConfirmedBanner(false);
 
-    // Returning sub → skip confirmation
+    // Returning subscriber → skip confirmation screen
     if (data?.alreadyConfirmed) {
       setWelcomeBack(true);
       setAwaitingConfirmation(false);
@@ -464,10 +462,9 @@ useEffect(() => {
       return;
     }
 
-      // New sub → wait for email confirmation
-      setWelcomeBack(false);
-      setAwaitingConfirmation(true);
-    }
+    // New subscriber → wait for email confirmation
+    setWelcomeBack(false);
+    setAwaitingConfirmation(true);
 
   } catch (err) {
     console.error(err);
