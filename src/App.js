@@ -326,6 +326,10 @@ useEffect(() => {
 const hasConfirmedRef = useRef(false);
 
 useEffect(() => {
+  // 🚫 Do not interfere with returning quiz takers
+  if (welcomeBack) return;
+  
+useEffect(() => {
   // 🔒 If quiz already started via Start button, do nothing
   if (step !== 0) return;
   if (hasConfirmedRef.current) return;
