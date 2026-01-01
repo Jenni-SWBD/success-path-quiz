@@ -792,7 +792,21 @@ if (step === 0) {
     <div style={{ display: "grid", placeItems: "center", background: "#transparent" }}>
       <div style={{ width: "100%", maxWidth: 720, borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", padding: 24, margin: "20px auto", background: "#fff" }}>
         {/* small confirmed banner */}
-        {confirmedBanner && <div style={{ background: "#b9e08520", padding: 12, borderRadius: 8, marginBottom: 12, textAlign: "center" }}>Thanks for confirming — here’s your quiz</div>}
+        {confirmedBanner && (
+  <div
+    style={{
+      background: "#b9e08520",
+      padding: 12,
+      borderRadius: 8,
+      marginBottom: 12,
+      textAlign: "center",
+    }}
+  >
+    {welcomeBack
+      ? "Welcome back — picking up where you left off"
+      : "Thanks for confirming — here’s your quiz"}
+  </div>
+)}
 
         {/* Progress */}
         <div style={{ marginBottom: 12 }}>
