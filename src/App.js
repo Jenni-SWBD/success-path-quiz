@@ -453,20 +453,25 @@ useEffect(() => {
 
       const data = await res.json();
 
-      // Reset any prior quiz state
-      setConfirmedBanner(false);
+      // Reset any prior banner state
+    setConfirmedBanner(false);
 
-      // Always show confirmation screen
+    if (data?.alreadyConfirmed) {
+      // Returning subscriber → skip confirmation, start quiz
+      setWelcomeBack(true);
+      setAwaitingConfirmation(false);
+      setStep(1);
+    } else {
+      // New subscriber → wait for email confirmation
+      setWelcomeBack(false);
       setAwaitingConfirmation(true);
-
-      // Flag returning subscriber for Welcome Back copy
-      setWelcomeBack(!!data?.alreadyConfirmed);
-      
-    } catch (err) {
-      console.error(err);
-      alert("Could not start confirmation. Try again later");
     }
+
+  } catch (err) {
+    console.error(err);
+    alert("Could not start confirmation. Try again later");
   }
+}
 
   /* =========================
      Intro Screen
@@ -517,16 +522,20 @@ useEffect(() => {
             <h3 style={{ marginBottom: 8, color: "#028c8f" }}>
   {welcomeBack ? "Welcome back." : "Check your inbox to verify your email address"}
 </h3>
+{welcomeBack && (
+  <p style={{ fontSize: 14, color: "#666", marginBottom: 12 }}>
+    You’ve already confirmed your email, welcome back.
+  </p>
+)}
 
 <p style={{ marginBottom: 12 }}>
   {welcomeBack ? (
     <>
-      Your Success Path isn’t fixed. It shifts as your business, energy and focus evolve.
-      <br /><br />
-      We’ve sent a confirmation to <b>{email}</b>.
-      <br /><br />
-      Taking the quiz again helps you see what’s most active now so you can respond with precision rather than habit.
-    </>
+  Your Success Path isn’t fixed. It shifts as your business, energy and focus evolve.
+  <br /><br />
+  Taking the quiz again helps you see what’s most active now so you can respond with precision rather than habit.
+</>
+
   ) : (
     <>
       We sent a confirmation to <b>{email}</b>. Click the link in that email to start your quiz.
