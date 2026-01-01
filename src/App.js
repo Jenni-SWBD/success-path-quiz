@@ -456,14 +456,14 @@ useEffect(() => {
       // Reset any prior quiz state
     setConfirmedBanner(false);
 
-    // Returning subscriber → skip confirmation entirely
+    // Returning subscriber → skip confirmation
     if (data?.alreadyConfirmed) {
       setWelcomeBack(true);
       setAwaitingConfirmation(false);
       setStep(1);
       return;
     }
-    
+
       // New subscriber → wait for email confirmation
       setWelcomeBack(false);
       setAwaitingConfirmation(true);
