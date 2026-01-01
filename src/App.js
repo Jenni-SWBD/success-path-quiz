@@ -321,55 +321,56 @@ useEffect(() => {
   }, [submitted, email, resSubmitted?.label]);
 
   /* ==========================================
-     On mount: detect ?confirmed, ?start or hash variants and resume quiz
-     ========================================== */
-  useEffect(() => {
+   On mount: detect confirmation and resume quiz
+   ========================================== */
+const hasConfirmedRef = useRef(false);
+
+useEffect(() => {
+  if (hasConfirmedRef.current) return;
+
+  try {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    const hash = window.location.hash || "";
+
+    const confirmedDetected =
+      params.get("confirmed") === "true" ||
+      params.get("confirmed") === "1" ||
+      params.has("confirmed") ||
+      hash.toLowerCase().includes("confirmed");
+
+    if (!confirmedDetected) return;
+
+    hasConfirmedRef.current = true;
+
     try {
-      const url = new URL(window.location.href);
-      const params = new URLSearchParams(url.search);
-      const hash = window.location.hash || "";
+      const savedName = localStorage.getItem("quizName");
+      const savedEmail = localStorage.getItem("quizEmail");
+      if (savedName) setName(savedName);
+      if (savedEmail) setEmail(savedEmail);
+    } catch (e) {}
 
-      const confirmedParam = params.get("confirmed");
-      const urlHasConfirmedKey = params.has("confirmed");
-      const hashHasConfirmed = hash.toLowerCase().includes("confirmed");
+    setAwaitingConfirmation(false);
+    setWelcomeBack(false);
+    setConfirmedBanner(true);
+    setTimeout(() => setConfirmedBanner(false), 3500);
 
-      const confirmedDetected =
-        confirmedParam === "true" || confirmedParam === "1" || urlHasConfirmedKey || hashHasConfirmed;
+    setStep(1);
 
-      const startParam = parseInt(params.get("start"), 10);
-      const hasStart = Number.isInteger(startParam) && startParam >= 1 && startParam <= questions.length;
-
-      if (confirmedDetected || hasStart) {
-        try {
-          const savedName = localStorage.getItem("quizName");
-          const savedEmail = localStorage.getItem("quizEmail");
-          if (savedName) setName(savedName);
-          if (savedEmail) setEmail(savedEmail);
-        } catch (e) {}
-
-        setConfirmedBanner(true);
-        setTimeout(() => setConfirmedBanner(false), 3500);
-
-        const stepToStart = hasStart ? startParam : 1;
-        setStep(stepToStart);
-
-        // clean URL: remove our params and any confirmed hash
-        try {
-          const clean = new URL(window.location.href);
-          clean.searchParams.delete("confirmed");
-          clean.searchParams.delete("start");
-          if (clean.hash && clean.hash.toLowerCase().includes("confirmed")) clean.hash = "";
-          window.history.replaceState({}, "", clean.toString());
-        } catch (e) {}
-
-        setAwaitingConfirmation(false);
+    // clean URL
+    try {
+      const clean = new URL(window.location.href);
+      clean.searchParams.delete("confirmed");
+      if (clean.hash && clean.hash.toLowerCase().includes("confirmed")) {
+        clean.hash = "";
       }
-    } catch (e) {
-      // ignore malformed URL in odd embed contexts
-    }
-    // run once
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      window.history.replaceState({}, "", clean.toString());
+    } catch (e) {}
+  } catch (e) {
+    // ignore malformed URL or embed edge cases
+  }
+  // run once
+}, []);
 
     /* ==========================================
      PostMessage listener: listen for parent page telling us to start
@@ -452,11 +453,15 @@ useEffect(() => {
 
       const data = await res.json();
 
+      // Reset any prior quiz state
+      setConfirmedBanner(false);
+
       // Always show confirmation screen
       setAwaitingConfirmation(true);
 
       // Flag returning subscriber for Welcome Back copy
       setWelcomeBack(!!data?.alreadyConfirmed);
+      
     } catch (err) {
       console.error(err);
       alert("Could not start confirmation. Try again later");
@@ -517,6 +522,8 @@ useEffect(() => {
   {welcomeBack ? (
     <>
       Your Success Path isn’t fixed. It shifts as your business, energy and focus evolve.
+      <br /><br />
+      We’ve sent a confirmation to <b>{email}</b>.
       <br /><br />
       Taking the quiz again helps you see what’s most active now so you can respond with precision rather than habit.
     </>
@@ -722,7 +729,7 @@ useEffect(() => {
       </div>
     );
   }
-
+  
   /* =========================
      Results Screen
      ========================= */
