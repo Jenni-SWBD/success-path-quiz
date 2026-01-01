@@ -29,11 +29,13 @@ export default async function handler(req, res) {
       range,
     });
 
-    const rows = resp.data.values || [];
+    const rows = (resp.data.values || []).slice(1);
 
-    const hasTakenQuiz = rows.some(
-      (row) => row[0]?.toLowerCase() === email.toLowerCase()
-    );
+const hasTakenQuiz = rows.some(
+  (row) =>
+    row[0] &&
+    row[0].trim().toLowerCase() === email.trim().toLowerCase()
+);
 
     return res.status(200).json({ hasTakenQuiz });
   } catch (err) {
