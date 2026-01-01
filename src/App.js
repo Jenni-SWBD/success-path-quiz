@@ -526,14 +526,9 @@ useEffect(() => {
 // STEP 0 only
 if (step === 0) {
 
-  // ⛔ Wait until email check has completed
-  if (!emailCheckComplete) {
-    return null;
-  }
-
-  // ───────────────────────────────────────
-  // Confirmation screen (NEW users ONLY)
-  // ───────────────────────────────────────
+ // ───────────────────────────────────────
+ // Confirmation screen (NEW users ONLY)
+// ───────────────────────────────────────
   if (awaitingConfirmation && !welcomeBack) {
   
     return (
