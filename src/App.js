@@ -505,7 +505,7 @@ useEffect(() => {
 }, []);
 
 // STEP 0 only
-if (step === 0 && emailCheckComplete) {
+if (step === 0) {
 
   // ───────────────────────────────────────
   // Confirmation screen (NEW users ONLY)
