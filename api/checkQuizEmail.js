@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: "v4", auth });
 
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-    const range = "Responses!C:C"; // email column
+    const range = "Responses!C:C";
 
     const resp = await sheets.spreadsheets.values.get({
       spreadsheetId,
@@ -31,15 +31,14 @@ export default async function handler(req, res) {
 
     const rows = (resp.data.values || []).slice(1);
 
-const hasTakenQuiz = rows.some(
-  (row) =>
-    row[0] &&
-    row[0].trim().toLowerCase() === email.trim().toLowerCase()
-);
+    const hasTakenQuiz = rows.some(
+      (row) =>
+        row[0] &&
+        row[0].trim().toLowerCase() === email.trim().toLowerCase()
+    );
 
     return res.status(200).json({ hasTakenQuiz });
   } catch (err) {
-    console.error("checkQuizEmail error", err);
     return res.status(500).json({ ok: false });
   }
 }
