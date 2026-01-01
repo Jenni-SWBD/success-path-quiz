@@ -179,8 +179,6 @@ export default function App() {
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
   const [submitted, setSubmitted] = useState(false);
 
-    const saveInFlightRef = useRef(false);
-
   /* ==========================================
      Squarespace auto-resize (postMessage)
      ========================================== */
@@ -244,18 +242,12 @@ export default function App() {
      Quiz handlers
      ========================================== */
   const handleAnswer = (letter) => {
-  const next = [...answers];
-  next[step - 1] = letter;
-  setAnswers(next);
-
-  if (step < questions.length) {
-    setStep(step + 1);
-  } else {
-    // force submission regardless of KIT state
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(true), 0);
-  }
-};
+    const next = [...answers];
+    next[step - 1] = letter;
+    setAnswers(next);
+    if (step < questions.length) setStep(step + 1);
+    else setSubmitted(true);
+  };
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
@@ -278,8 +270,8 @@ useEffect(() => {
   if (!submitted) return;
 
   // Prevent duplicate submissions
-  if (saveInFlightRef.current) return;
-  saveInFlightRef.current = true;
+  if (window.__quizSaved__) return;
+  window.__quizSaved__ = true;
 
   const winner = calcResult();
   const payload = {
@@ -297,14 +289,11 @@ useEffect(() => {
   } catch (e) {}
 
   fetch("/api/saveResult", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload),
-}).catch(() => {
-  // allow retry if the save genuinely fails
-  saveInFlightRef.current = false;
-});
-// eslint-disable-next-line react-hooks/exhaustive-deps
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [submitted]);
 
   /* ==========================================
@@ -433,41 +422,32 @@ useEffect(() => {
 
   // New: start handler to trigger KIT double opt-in and show "check inbox"
   async function handleStartClick() {
-  setNameTouched(true);
-  setEmailTouched(true);
-  if (validateName(name) || validateEmail(email) || !gdpr) return;
+    setNameTouched(true);
+    setEmailTouched(true);
+    if (validateName(name) || validateEmail(email) || !gdpr) return;
 
-  try {
-    localStorage.setItem("quizName", name);
-    localStorage.setItem("quizEmail", email);
-  } catch (e) {}
+    try {
+      localStorage.setItem("quizName", name);
+      localStorage.setItem("quizEmail", email);
+    } catch (e) {}
 
-  try {
-    const res = await fetch("/api/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        first_name: name,
-        last_name: "",
-        quizData: {},
-      }),
-    });
-
-    const data = await res.json();
-
-    // Existing KIT subscriber → start quiz immediately
-    if (data?.alreadyConfirmed) {
-      setStep(1);
-    } else {
-      // New subscriber → wait for confirmation email
+    try {
+      await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          first_name: name,
+          last_name: "",
+          quizData: {},
+        }),
+      });
       setAwaitingConfirmation(true);
+    } catch (err) {
+      console.error(err);
+      alert("Could not start confirmation. Try again later");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Could not start confirmation. Try again later");
   }
-}
 
     /* =========================
      Intro Screen
