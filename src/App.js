@@ -417,7 +417,7 @@ useEffect(() => {
 
           setStep(startParam);
           setConfirmedBanner(true);
-          setTimeout(() => setConfirmedBanner(false), 2500);
+          setTimeout(() => setConfirmedBanner(false), 5000);
           return;
         }
 
@@ -432,7 +432,7 @@ useEffect(() => {
 
           setStep(1);
           setConfirmedBanner(true);
-          setTimeout(() => setConfirmedBanner(false), 2500);
+          setTimeout(() => setConfirmedBanner(false), 5000);
         }
       } catch (err) {
         // ignore malformed messages
@@ -484,7 +484,7 @@ useEffect(() => {
   setEmailCheckComplete(true)
   setStep(1);
   setConfirmedBanner(true);
-  setTimeout(() => setConfirmedBanner(false), 2500);
+  setTimeout(() => setConfirmedBanner(false), 5000);
   return;
 }
 
