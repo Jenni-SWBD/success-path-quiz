@@ -803,8 +803,8 @@ if (step === 0) {
     }}
   >
     {welcomeBack
-      ? "Welcome back — picking up where you left off"
-      : "Thanks for confirming — here’s your quiz"}
+      ? "Welcome back to the quiz. This isn’t a one-time result. The quiz reflects your current energetic focus, so it’s expected that your outcome may change over time. Your email is already confirmed. Enjoy exploring what’s active for you now."
+      : "Thanks for confirming your email address — here’s your quiz"}
   </div>
 )}
 
