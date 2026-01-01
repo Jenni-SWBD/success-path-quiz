@@ -470,10 +470,15 @@ useEffect(() => {
   });
 
   const checkData = await checkRes.json();
-  setEmailCheckComplete(true);
 
+  console.log("[quiz-email-check] result:", checkData?.hasTakenQuiz);
+  console.log("[quiz-email-check] step before:", step);
+
+  setEmailCheckComplete(true);
+ 
   // 2. Returning quiz taker → enter immediately
   if (checkData?.hasTakenQuiz) {
+  console.log("[quiz-email-check] routing: returning user → quiz");
   setWelcomeBack(true);
   setAwaitingConfirmation(false);
   setEmailCheckComplete(true)
@@ -495,6 +500,7 @@ useEffect(() => {
       }),
     });
 
+    console.log("[quiz-email-check] routing: new user → confirmation");
     setWelcomeBack(false);
     setAwaitingConfirmation(true);
     setEmailCheckComplete(true);
