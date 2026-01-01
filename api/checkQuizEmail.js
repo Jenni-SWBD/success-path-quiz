@@ -14,19 +14,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log(
-    "GOOGLE_SERVICE_ACCOUNT exists:",
-  !!process.env.GOOGLE_SERVICE_ACCOUNT
-);
-
+    
     const auth = new google.auth.GoogleAuth({
-      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT),
-      scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-    });
+  credentials: {
+    type: "service_account",
+    project_id: process.env.GOOGLE_PROJECT_ID,
+    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+  },
+  scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+});
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    const spreadsheetId = process.env.SHEET_ID;
     const range = "Responses!C:C"; // email column
 
     const resp = await sheets.spreadsheets.values.get({
