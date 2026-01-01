@@ -175,6 +175,8 @@ export default function App() {
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
   const [confirmedBanner, setConfirmedBanner] = useState(false);
   const [welcomeBack, setWelcomeBack] = useState(false);
+  const [emailCheckComplete, setEmailCheckComplete] = useState(false);
+
 
     // Email check gate
   const [emailCheckComplete, setEmailCheckComplete] = useState(false);
@@ -474,9 +476,10 @@ useEffect(() => {
 
   // 2. Returning quiz taker → enter immediately
   if (checkData?.hasTakenQuiz) {
-  setStep(1);                    // ← FIRST
   setWelcomeBack(true);
   setAwaitingConfirmation(false);
+  setEmailCheckComplete(true)
+  setStep(1);
   setConfirmedBanner(true);
   setTimeout(() => setConfirmedBanner(false), 2500);
   return;
@@ -496,6 +499,7 @@ useEffect(() => {
 
     setWelcomeBack(false);
     setAwaitingConfirmation(true);
+    setEmailCheckComplete(true);
   } catch {
     alert("Could not start confirmation. Try again later");
   }
@@ -517,6 +521,11 @@ useEffect(() => {
 
 // STEP 0 only
 if (step === 0) {
+
+  // ⛔ Wait until email check has completed
+  if (!emailCheckComplete) {
+    return null;
+  }
 
   // ───────────────────────────────────────
   // Confirmation screen (NEW users ONLY)
