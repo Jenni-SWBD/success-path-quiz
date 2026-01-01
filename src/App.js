@@ -174,6 +174,7 @@ export default function App() {
   // Confirmation / UX additions
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
   const [confirmedBanner, setConfirmedBanner] = useState(false);
+  const [welcomeBack, setWelcomeBack] = useState(false);
 
   // Quiz state
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
@@ -370,7 +371,7 @@ useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ==========================================
+    /* ==========================================
      PostMessage listener: listen for parent page telling us to start
      ========================================== */
   useEffect(() => {
@@ -383,7 +384,11 @@ useEffect(() => {
 
         // handle explicit start param
         const startParam = parseInt(params.get("start"), 10);
-        if (Number.isInteger(startParam) && startParam >= 1 && startParam <= questions.length) {
+        if (
+          Number.isInteger(startParam) &&
+          startParam >= 1 &&
+          startParam <= questions.length
+        ) {
           try {
             const savedName = localStorage.getItem("quizName");
             const savedEmail = localStorage.getItem("quizEmail");
@@ -420,7 +425,9 @@ useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // New: start handler to trigger KIT double opt-in and show "check inbox"
+  /* ==========================================
+     Start handler: trigger KIT double opt-in
+     ========================================== */
   async function handleStartClick() {
     setNameTouched(true);
     setEmailTouched(true);
@@ -432,7 +439,7 @@ useEffect(() => {
     } catch (e) {}
 
     try {
-      await fetch("/api/subscribe", {
+      const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -442,16 +449,24 @@ useEffect(() => {
           quizData: {},
         }),
       });
+
+      const data = await res.json();
+
+      // Always show confirmation screen
       setAwaitingConfirmation(true);
+
+      // Flag returning subscriber for Welcome Back copy
+      setWelcomeBack(!!data?.alreadyConfirmed);
     } catch (err) {
       console.error(err);
       alert("Could not start confirmation. Try again later");
     }
   }
 
-    /* =========================
+  /* =========================
      Intro Screen
      ========================= */
+
   useEffect(() => {
     // Always keep the quiz background transparent to show page design
     const setTransparent = () => {
@@ -495,15 +510,23 @@ useEffect(() => {
             }}
           >
             <h3 style={{ marginBottom: 8, color: "#028c8f" }}>
-              Check your inbox to verify your email address
-            </h3>
-            <p style={{ marginBottom: 12 }}>
-              We sent a confirmation to <b>{email}</b>. Click the link in that email to start your
-              quiz.
-            </p>
-            <p style={{ fontSize: 13, color: "#666" }}>
-              If you don’t see it, please check Promotions or Spam folder.
-            </p>
+  {welcomeBack ? "Welcome back." : "Check your inbox to verify your email address"}
+</h3>
+
+<p style={{ marginBottom: 12 }}>
+  {welcomeBack ? (
+    <>
+      Your Success Path isn’t fixed. It shifts as your business, energy and focus evolve.
+      <br /><br />
+      Taking the quiz again helps you see what’s most active now so you can respond with precision rather than habit.
+    </>
+  ) : (
+    <>
+      We sent a confirmation to <b>{email}</b>. Click the link in that email to start your quiz.
+    </>
+  )}
+</p>
+
             <p
               style={{
                 marginTop: 16,
