@@ -97,30 +97,30 @@ const questions = [
 
 const results = {
   A: { 
-    label: "Impact", 
-    colour: "#ff0069", 
-    url: "https://jennijohnson.co.uk/quiz-sp-impact", 
+    label: "Visibility", 
+    colour: "#5faf1a", 
+    url: "https://jennijohnson.co.uk/quiz-visibility", 
     initial: `<p>You’re standing on the edge of a version of yourself you’ve been half-holding back.</p><p>This path opens when you stop diluting your truth and let your presence land without hesitation.</p><p>You already feel the pull to speak more cleanly… act more boldly… show up without editing yourself to fit the room.</p><p>You don’t need to be louder, you just need to be you, without the filter.</p><p>To help you access that clarity, I’ve created a short <b>Impact Path visualisation</b>.</p><p>It’ll bring you back to the energy you lead with when you’re not second-guessing yourself.</p><p>Let it meet you. Let it clear the noise.</p>` 
   },
 
   B: { 
-    label: "Growth", 
-    colour: "#115e84", 
-    url: "https://jennijohnson.co.uk/quiz-sp-growth", 
+    label: "Expansion", 
+    colour: "#b63a0d", 
+    url: "https://jennijohnson.co.uk/quiz-expansion", 
     initial: `<p>You want growth that feels grounded rather than demanding… spacious rather than overwhelming.</p><p>This path opens up when you start choosing the kind of growth that strengthens your foundation instead of stretching you thin.</p><p>You’re ready for progress that feels clean… intentional… aligned with your natural patterns instead of someone else’s expectations.</p><p>To help you reconnect with that rhythm, I’ve recorded a short <b>Growth Path visualisation</b>.</p><p>It’ll help you settle your system and hear the direction that’s been waiting beneath the noise.</p><p>Let it land gently. Your pace is a power, not a problem.</p>` 
   },
 
   C: { 
-    label: "Balance", 
-    colour: "#9d125e", 
-    url: "https://jennijohnson.co.uk/quiz-sp-balance", 
+    label: "Stability", 
+    colour: "#195a57", 
+    url: "https://jennijohnson.co.uk/quiz-stability", 
     initial: `<p>You’re being pulled back to your own centre, the place you lead from when you’re not carrying more than you should.</p><p>Right now your system wants spaciousness, steadiness and room to breathe.</p><p>Not withdrawal… not collapse… just a return to the clarity that comes when you stop overriding yourself.</p><p>Balance isn’t stillness. It’s remembering where your energy begins and ends.</p><p>To help you find that point again, I’ve created a short <b>Balance Path visualisation</b>.</p><p>It’ll guide you back to a rhythm that feels like yours, not the one you’ve been keeping up with.</p><p>Give yourself a moment. Clarity comes when you stop rushing for it.</p>` 
   },
 
   D: { 
-    label: "Transformation", 
-    colour: "#000000", 
-    url: "https://jennijohnson.co.uk/quiz-sp-transformation", 
+    label: "Evolution", 
+    colour: "#9d2ec4", 
+    url: "https://jennijohnson.co.uk/quiz-evolution", 
     initial: `<p>You’re in a pivotal doorway. You're not stuck, not lost but a version of you is dissolving and the next one is trying to surface.</p><p>This path opens up when you stop gripping onto your old identity and let the new one take shape without forcing it.</p><p>You’re ready for movement… but not the kind that comes from certainty.</p><p>The kind that comes from truth and the deeper knowing you’ve been orbiting for a while.</p><p>To support you through this shift, I’ve recorded a short <b>Transformation Path visualisation</b>.</p><p>It’ll help you loosen what’s outdated and recognise the direction your energy is already turning toward.</p><p>Let it guide you. You’re already becoming the person your next level requires.</p>` 
   },
 };
