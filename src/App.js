@@ -177,7 +177,7 @@ export default function App() {
   const [welcomeBack, setWelcomeBack] = useState(false);
 
   // Email check gate
-  const [emailCheckComplete, setEmailCheckComplete] = useState(false);
+  const [, setEmailCheckComplete] = useState(false);
  
   // Quiz state
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
