@@ -618,7 +618,7 @@ if (step === 0) {
         {/* Hero Image */}
         <img
           src="/quiz-cover.png"
-          alt="Success Path Quiz"
+          alt="Clarity Pathway Quiz"
           style={{
             width: "100%",
             maxHeight: "220px",
@@ -637,7 +637,7 @@ if (step === 0) {
             color: "#028c8f",
           }}
         >
-          Discover Your Success Path
+          Discover Your Clarity Pathway
         </h2>
 
         <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
@@ -647,7 +647,7 @@ if (step === 0) {
 
         <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 16 }}>
           It’s not a personality test. It’s a precision tool that tunes you into your most active
-          Success Path to help you align with the energy shaping what comes next.
+          Clarity Pathway to help you align with the energy shaping what comes next.
         </p>
 
         {/* Form */}
@@ -750,7 +750,7 @@ if (step === 0) {
           }}
         >
           <motion.h2 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: 26, fontWeight: 700, marginBottom: 16, color: res.colour }}>
-            Your Success Path is… {res.label}
+            Your Clarity Pathway is… {res.label}
           </motion.h2>
 
           <motion.div
@@ -807,7 +807,7 @@ if (step === 0) {
     }}
   >
     {welcomeBack
-      ? "Welcome back to the quiz. This isn’t a one-time result. The quiz reflects your current energetic focus, so it’s expected that your outcome may change over time. Your email is already confirmed. Enjoy exploring what’s active for you now."
+      ? "Welcome back to the Clarity Pathway quiz. This isn’t a one-time result. The quiz reflects your current energetic focus, so it’s expected that your outcome may change over time. Your email is already confirmed. Enjoy exploring what’s active for you now."
       : "Thanks for confirming your email address — here’s your quiz"}
   </div>
 )}
