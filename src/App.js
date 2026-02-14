@@ -346,6 +346,25 @@ useEffect(() => {
   }, [submitted, email, resSubmitted?.label]);
 
   /* ==========================================
+   Resume quiz from localStorage (on mount)
+   ========================================== */
+useEffect(() => {
+  try {
+    const savedStep = localStorage.getItem("quizStep");
+    const savedAnswers = localStorage.getItem("quizAnswers");
+
+    if (savedStep && savedAnswers) {
+      const parsedAnswers = JSON.parse(savedAnswers);
+
+      if (Array.isArray(parsedAnswers)) {
+        setAnswers(parsedAnswers);
+        setStep(parseInt(savedStep, 10));
+      }
+    }
+  } catch {}
+}, []);
+
+  /* ==========================================
    On mount: detect confirmation and resume quiz
    ========================================== */
 const hasConfirmedRef = useRef(false);
