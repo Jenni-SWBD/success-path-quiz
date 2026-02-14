@@ -355,6 +355,8 @@ useEffect(() => {
     /* ==========================================
    On mount: detect confirmation and resume quiz
    ========================================== */
+console.log("CONFIRMATION EFFECT RUNNING", step);
+
 const hasConfirmedRef = useRef(false);
 
 useEffect(() => {
@@ -413,6 +415,8 @@ useEffect(() => {
 /* ==========================================
    PostMessage listener: listen for parent page telling us to start
    ========================================== */
+
+   console.log("POSTMESSAGE EFFECT RUNNING");
 
   useEffect(() => {
     function onMessage(e) {
