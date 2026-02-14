@@ -428,11 +428,17 @@ useEffect(() => {
 
         // handle explicit start param
         const startParam = parseInt(params.get("start"), 10);
-        if (
-          Number.isInteger(startParam) &&
-          startParam >= 1 &&
-          startParam <= questions.length
-        ) {
+
+// 🔒 Only use start param if no saved progress exists
+const savedStep = parseInt(localStorage.getItem("quizStep"), 10);
+
+if (
+  (!savedStep || savedStep < 1) &&
+  Number.isInteger(startParam) &&
+  startParam >= 1 &&
+  startParam <= questions.length
+) {
+
           try {
             const savedName = localStorage.getItem("quizName");
             const savedEmail = localStorage.getItem("quizEmail");
