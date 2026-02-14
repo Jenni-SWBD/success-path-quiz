@@ -370,6 +370,9 @@ useEffect(() => {
 const hasConfirmedRef = useRef(false);
 
 useEffect(() => {
+
+  if (localStorage.getItem("quizStep")) return;
+
   // 🚫 Do not interfere with returning quiz takers
   if (welcomeBack) return;
 
