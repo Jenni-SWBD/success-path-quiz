@@ -257,12 +257,23 @@ useEffect(() => {
      Quiz handlers
      ========================================== */
   const handleAnswer = (letter) => {
-    const next = [...answers];
-    next[step - 1] = letter;
-    setAnswers(next);
-    if (step < questions.length) setStep(step + 1);
-    else setSubmitted(true);
-  };
+  const next = [...answers];
+  next[step - 1] = letter;
+
+  const nextStep = step < questions.length ? step + 1 : null;
+
+  setAnswers(next);
+
+  try {
+    localStorage.setItem("quizAnswers", JSON.stringify(next));
+    if (nextStep) {
+      localStorage.setItem("quizStep", nextStep.toString());
+    }
+  } catch {}
+
+  if (nextStep) setStep(nextStep);
+  else setSubmitted(true);
+};
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
