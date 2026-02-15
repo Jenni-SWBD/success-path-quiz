@@ -97,9 +97,9 @@ const questions = [
 
 const results = {
   A: { 
-    label: "Visibility", 
+    label: "Identity", 
     colour: "#5faf1a", 
-    url: "https://jennijohnson.co.uk/quiz-visibility", 
+    url: "https://jennijohnson.co.uk/quiz-identity", 
     initial: `<p>You’re standing on the edge of a version of yourself you’ve been half-holding back.</p><p>This path opens when you stop diluting your truth and let your presence land without hesitation.</p><p>You already feel the pull to speak more cleanly… act more boldly… show up without editing yourself to fit the room.</p><p>You don’t need to be louder, you just need to be you, without the filter.</p><p>To help you access that clarity, I’ve created a short <b>Visibility Pathway visualisation</b>.</p><p>It’ll bring you back to the energy you lead with when you’re not second-guessing yourself.</p><p>Let it meet you. Let it clear the noise.</p>` 
   },
 
