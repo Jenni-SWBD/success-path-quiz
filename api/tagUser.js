@@ -5,10 +5,10 @@ export default async function handler(req, res) {
   if (!email || !result) return res.status(400).json({ error: "Missing email or result" });
 
   const TAG_MAP = {
-    Impact: "8184863",
-    Growth: "8184865",
-    Balance: "8157430",
-    Transformation: "8184866"
+    Identity: "8184863",
+    Expansion: "8184865",
+    Stability: "8157430",
+    Evolution: "8184866"
   };
   const tagId = TAG_MAP[result];
   if (!tagId) return res.status(400).json({ error: `Invalid result value: ${result}` });
