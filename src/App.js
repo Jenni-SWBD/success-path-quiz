@@ -519,25 +519,12 @@ if (
   return;
 }
 
-  // 3. New quiz taker → ONLY now show confirmation
-  try {
-    await fetch("/api/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        first_name: name,
-        last_name: "",
-      }),
-    });
-
-    console.log("[quiz-email-check] routing: new user → confirmation");
-    setWelcomeBack(false);
-    setAwaitingConfirmation(true);
-    setEmailCheckComplete(true);
-  } catch {
-    alert("Could not start confirmation. Try again later");
-  }
+  // 3. New quiz taker → go straight to quiz (no early subscriber creation)
+console.log("[quiz-email-check] routing: new user → quiz (no early subscribe)");
+setWelcomeBack(false);
+setAwaitingConfirmation(false);
+setEmailCheckComplete(true);
+setStep(1);
 }
 
   /* =========================
