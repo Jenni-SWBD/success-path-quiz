@@ -1,5 +1,5 @@
 // pages/api/subscribe.js
-// Handles ConvertKit double opt-in subscription for the Success Path Quiz
+// Handles ConvertKit double opt-in subscription for the Clarity Pathways Quiz
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
