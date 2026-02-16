@@ -159,15 +159,8 @@ const btnWhite = {
    App Component
    ========================================================= */
 export default function App() {
-  // Steps: 0=intro, 1..11 = questions
-  const [step, setStep] = useState(() => {
-  try {
-    const savedStep = localStorage.getItem("quizStep");
-    return savedStep ? parseInt(savedStep, 10) : 0;
-  } catch {
-    return 0;
-  }
-});
+  // Steps: 0=intro, 1..10 = questions
+  const [step, setStep] = useState(0);
 
   // Intro form state
   const [name, setName] = useState("");
