@@ -264,14 +264,7 @@ useEffect(() => {
 
   setAnswers(next);
 
-  try {
-    localStorage.setItem("quizAnswers", JSON.stringify(next));
-    if (nextStep) {
-      localStorage.setItem("quizStep", nextStep.toString());
-    }
-  } catch {}
-
-  if (nextStep) setStep(nextStep);
+    if (nextStep) setStep(nextStep);
   else setSubmitted(true);
 };
 
