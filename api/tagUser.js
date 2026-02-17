@@ -15,16 +15,16 @@ export default async function handler(req, res) {
     Evolution: "8184866"
   };
 
-  const QUIZ_STARTED_TAG_ID = "15993774";
   const QUIZ_COMPLETED_TAG_ID = "15993813";
+  const AUDIENCE_ACTIVE_TAG_ID = "16076303";
 
-  const tagId = TAG_MAP[result];
-  if (!tagId) {
+  const resultTagId = TAG_MAP[result];
+  if (!resultTagId) {
     return res.status(400).json({ error: `Invalid result value: ${result}` });
   }
 
   try {
-    // 1) Create or update subscriber
+    // 1. Create or update subscriber
     const subResp = await fetch("https://api.kit.com/v4/subscribers", {
       method: "POST",
       headers: {
@@ -48,19 +48,7 @@ export default async function handler(req, res) {
 
     const subscriberId = subscriber.id;
 
-    // 2) Remove Quiz: Started (if present)
-    await fetch(
-      `https://api.kit.com/v4/tags/${QUIZ_STARTED_TAG_ID}/subscribers/${subscriberId}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Kit-Api-Key": process.env.KIT_API_KEY
-        }
-      }
-    );
-
-    // 3) Add Quiz: Completed
+    // 2. Apply Quiz: Completed
     await fetch(
       `https://api.kit.com/v4/tags/${QUIZ_COMPLETED_TAG_ID}/subscribers/${subscriberId}`,
       {
@@ -73,9 +61,22 @@ export default async function handler(req, res) {
       }
     );
 
-    // 4) Add result tag (Identity / Expansion / etc)
+    // 3. Apply result tag (Identity / Expansion / Stability / Evolution)
     await fetch(
-      `https://api.kit.com/v4/tags/${tagId}/subscribers/${subscriberId}`,
+      `https://api.kit.com/v4/tags/${resultTagId}/subscribers/${subscriberId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Kit-Api-Key": process.env.KIT_API_KEY
+        },
+        body: JSON.stringify({})
+      }
+    );
+
+    // 4. Apply Audience: Active
+    await fetch(
+      `https://api.kit.com/v4/tags/${AUDIENCE_ACTIVE_TAG_ID}/subscribers/${subscriberId}`,
       {
         method: "POST",
         headers: {
@@ -88,7 +89,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Quiz completion enforced for ${email}`,
+      message: `Tagged ${email} as completed + active`,
       subscriberId
     });
 
