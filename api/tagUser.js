@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing email or result" });
   }
 
-  const TAG_MAP = {
+  const RESULT_TAGS = {
     Identity: "8184863",
     Expansion: "8184865",
     Stability: "8157430",
@@ -18,8 +18,8 @@ export default async function handler(req, res) {
   const QUIZ_COMPLETED_TAG_ID = "15993813";
   const AUDIENCE_ACTIVE_TAG_ID = "16076303";
 
-  const resultTagId = TAG_MAP[result];
-  if (!resultTagId) {
+  const newResultTagId = RESULT_TAGS[result];
+  if (!newResultTagId) {
     return res.status(400).json({ error: `Invalid result value: ${result}` });
   }
 
@@ -48,7 +48,20 @@ export default async function handler(req, res) {
 
     const subscriberId = subscriber.id;
 
-    // 2. Apply Quiz: Completed
+    // 2. REMOVE all existing result tags (clear history)
+    for (const tagId of Object.values(RESULT_TAGS)) {
+      await fetch(
+        `https://api.kit.com/v4/tags/${tagId}/subscribers/${subscriberId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "X-Kit-Api-Key": process.env.KIT_API_KEY
+          }
+        }
+      );
+    }
+
+    // 3. Apply Quiz: Completed
     await fetch(
       `https://api.kit.com/v4/tags/${QUIZ_COMPLETED_TAG_ID}/subscribers/${subscriberId}`,
       {
@@ -61,9 +74,9 @@ export default async function handler(req, res) {
       }
     );
 
-    // 3. Apply result tag (Identity / Expansion / Stability / Evolution)
+    // 4. Apply NEW result tag
     await fetch(
-      `https://api.kit.com/v4/tags/${resultTagId}/subscribers/${subscriberId}`,
+      `https://api.kit.com/v4/tags/${newResultTagId}/subscribers/${subscriberId}`,
       {
         method: "POST",
         headers: {
@@ -74,7 +87,7 @@ export default async function handler(req, res) {
       }
     );
 
-    // 4. Apply Audience: Active
+    // 5. Apply Audience: Active
     await fetch(
       `https://api.kit.com/v4/tags/${AUDIENCE_ACTIVE_TAG_ID}/subscribers/${subscriberId}`,
       {
@@ -89,7 +102,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Tagged ${email} as completed + active`,
+      message: `Tagged ${email} with latest result only`,
       subscriberId
     });
 
