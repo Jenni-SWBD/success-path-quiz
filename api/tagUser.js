@@ -1,27 +1,26 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
+  if (req.method !== "POST")
     return res.status(405).json({ error: "Method not allowed" });
-  }
 
   const { email, result } = req.body;
-  if (!email || !result) {
+  if (!email || !result)
     return res.status(400).json({ error: "Missing email or result" });
-  }
 
-  const RESULT_TAGS = {
+  // Pathway result tags
+  const TAG_MAP = {
     Identity: "8184863",
     Expansion: "8184865",
     Stability: "8157430",
     Evolution: "8184866"
   };
 
+  // System tags
   const QUIZ_COMPLETED_TAG_ID = "15993813";
   const AUDIENCE_ACTIVE_TAG_ID = "16076303";
 
-  const newResultTagId = RESULT_TAGS[result];
-  if (!newResultTagId) {
+  const currentResultTagId = TAG_MAP[result];
+  if (!currentResultTagId)
     return res.status(400).json({ error: `Invalid result value: ${result}` });
-  }
 
   try {
     // 1. Create or update subscriber
@@ -41,15 +40,15 @@ export default async function handler(req, res) {
 
     const subData = await subResp.json();
     const subscriber = subData?.subscriber;
-
-    if (!subscriber?.id) {
+    if (!subscriber?.id)
       throw new Error("Subscriber creation/update failed: no ID returned");
-    }
 
     const subscriberId = subscriber.id;
 
-    // 2. REMOVE all existing result tags (clear history)
-    for (const tagId of Object.values(RESULT_TAGS)) {
+    // 2. Remove ALL pathway result tags first
+    const allPathwayTagIds = Object.values(TAG_MAP);
+
+    for (const tagId of allPathwayTagIds) {
       await fetch(
         `https://api.kit.com/v4/tags/${tagId}/subscribers/${subscriberId}`,
         {
@@ -61,49 +60,36 @@ export default async function handler(req, res) {
       );
     }
 
-    // 3. Apply Quiz: Completed
-    await fetch(
-      `https://api.kit.com/v4/tags/${QUIZ_COMPLETED_TAG_ID}/subscribers/${subscriberId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Kit-Api-Key": process.env.KIT_API_KEY
-        },
-        body: JSON.stringify({})
-      }
-    );
+    // 3. Apply system tags + current result tag
+    const tagsToApply = [
+      QUIZ_COMPLETED_TAG_ID,
+      AUDIENCE_ACTIVE_TAG_ID,
+      currentResultTagId
+    ];
 
-    // 4. Apply NEW result tag
-    await fetch(
-      `https://api.kit.com/v4/tags/${newResultTagId}/subscribers/${subscriberId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Kit-Api-Key": process.env.KIT_API_KEY
-        },
-        body: JSON.stringify({})
-      }
-    );
+    for (const tagId of tagsToApply) {
+      const tagResp = await fetch(
+        `https://api.kit.com/v4/tags/${tagId}/subscribers/${subscriberId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Kit-Api-Key": process.env.KIT_API_KEY
+          },
+          body: JSON.stringify({})
+        }
+      );
 
-    // 5. Apply Audience: Active
-    await fetch(
-      `https://api.kit.com/v4/tags/${AUDIENCE_ACTIVE_TAG_ID}/subscribers/${subscriberId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Kit-Api-Key": process.env.KIT_API_KEY
-        },
-        body: JSON.stringify({})
+      if (!tagResp.ok) {
+        const errText = await tagResp.text();
+        throw new Error(`Tag request failed: ${tagResp.status} ${errText}`);
       }
-    );
+    }
 
     return res.status(200).json({
       success: true,
-      message: `Tagged ${email} with latest result only`,
-      subscriberId
+      message: `Tagged ${email} with ${result} and cleaned old pathway tags`,
+      subscriber
     });
 
   } catch (err) {
