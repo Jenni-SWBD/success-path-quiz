@@ -654,7 +654,7 @@ if (step === 0) {
             color: "#028c8f",
           }}
         >
-          Discover Your Clarity Pathway
+          Discover Your Clarity Path
         </h2>
 
         <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 12 }}>
@@ -664,7 +664,7 @@ if (step === 0) {
 
         <p style={{ fontSize: 16, lineHeight: 1.5, marginBottom: 16 }}>
           It’s not a personality test. It’s a precision tool that tunes you into your most active
-          Clarity Pathway to help you align with the energy shaping what comes next.
+          Clarity Path to help you align with the energy shaping what comes next.
         </p>
 
         {/* Form */}
